@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FORGE">
+<meta name="theme-color" content="#0a0a0b">
+<title>FORGE — Workout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg2:#101013;
+    --card:#16161b;
+    --card2:#1d1d24;
+    --line:rgba(255,255,255,.07);
+    --line2:rgba(255,255,255,.12);
+    --txt:#f4f4f6;
+    --mut:#8b8b94;
+    --mut2:#5d5d66;
+    --red:#ff2e3f;
+    --red2:#ff5a47;
+    --rest:#23d3a0;
+    --rest2:#14b8e0;
+    --gold:#ffce5c;
+    --safe-t:env(safe-area-inset-top,0px);
+    --safe-b:env(safe-area-inset-bottom,0px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:'Manrope',-apple-system,sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgba(255,46,63,.16), transparent 60%),
+      radial-gradient(80% 40% at 100% 100%, rgba(35,211,160,.05), transparent 70%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  #app{position:relative;z-index:1;max-width:520px;margin:0 auto;min-height:100%}
+  .view{display:none;animation:fade .35s ease both}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+  /* ---------- shared ---------- */
+  .bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:.02em}
+  .pad{padding:0 18px}
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    padding:calc(var(--safe-t) + 12px) 18px 12px;
+    background:linear-gradient(180deg,rgba(10,10,11,.92),rgba(10,10,11,.6) 70%,transparent);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    display:flex;align-items:center;gap:12px;
+  }
+  .iconbtn{
+    width:42px;height:42px;flex:0 0 auto;border:1px solid var(--line2);
+    background:var(--card);border-radius:13px;color:var(--txt);
+    font-size:20px;display:grid;place-items:center;cursor:pointer;transition:.15s;
+  }
+  .iconbtn:active{transform:scale(.9);background:var(--card2)}
+  .btn{
+    border:none;border-radius:16px;font-family:'Manrope';font-weight:800;
+    font-size:16px;color:#fff;padding:18px;width:100%;cursor:pointer;
+    background:linear-gradient(135deg,var(--red),var(--red2));
+    box-shadow:0 8px 26px rgba(255,46,63,.32);transition:.15s;
+    letter-spacing:.02em;
+  }
+  .btn:active{transform:scale(.97);box-shadow:0 4px 14px rgba(255,46,63,.28)}
+  .btn.ghost{background:var(--card);border:1px solid var(--line2);box-shadow:none;color:var(--txt)}
+  .btn.ghost:active{background:var(--card2)}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+    color:var(--mut);background:var(--card);border:1px solid var(--line);
+    padding:6px 11px;border-radius:999px}
+
+  /* ---------- HOME ---------- */
+  .hero{padding:calc(var(--safe-t) + 26px) 18px 8px}
+  .logo{font-size:60px;line-height:.82;color:var(--txt)}
+  .logo span{color:var(--red)}
+  .tag{color:var(--mut);font-weight:600;font-size:13px;margin-top:6px;letter-spacing:.04em;text-transform:uppercase}
+  .statrow{display:flex;gap:10px;padding:18px 18px 4px}
+  .stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+  .stat .n{font-family:'Bebas Neue';font-size:38px;line-height:.9;color:var(--txt)}
+  .stat .n.red{color:var(--red)}
+  .stat .l{font-size:11px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+  .sechead{display:flex;align-items:baseline;justify-content:space-between;padding:24px 18px 12px}
+  .sechead h2{font-family:'Bebas Neue';font-size:26px;font-weight:400;letter-spacing:.04em}
+  .sechead a{color:var(--red);font-weight:700;font-size:13px;cursor:pointer;text-decoration:none}
+  .days{padding:0 18px 40px;display:grid;gap:13px}
+  .day{
+    position:relative;overflow:hidden;background:var(--card);
+    border:1px solid var(--line);border-radius:22px;padding:20px;cursor:pointer;
+    transition:.18s;animation:pop .4s both;
+  }
+  .day:active{transform:scale(.98);border-color:var(--line2)}
+  .day .glow{position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle,var(--accent,var(--red)),transparent 70%);opacity:.22;filter:blur(6px)}
+  .day .kicker{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent,var(--red))}
+  .day h3{font-family:'Bebas Neue';font-weight:400;font-size:32px;line-height:.95;margin:4px 0 8px;letter-spacing:.02em}
+  .day .meta{display:flex;gap:14px;color:var(--mut);font-size:13px;font-weight:600}
+  .day .meta b{color:var(--txt)}
+  .day .last{margin-top:12px;font-size:12px;color:var(--mut2);font-weight:600}
+  .day .last.done{color:var(--rest)}
+  .resume{
+    margin:0 18px 6px;background:linear-gradient(135deg,rgba(255,46,63,.16),rgba(255,90,71,.06));
+    border:1px solid rgba(255,46,63,.4);border-radius:20px;padding:16px 18px;
+    display:flex;align-items:center;justify-content:space-between;cursor:pointer;animation:pop .4s both;
+  }
+  .resume .t{font-weight:800;font-size:15px}
+  .resume .s{color:var(--mut);font-size:12.5px;font-weight:600;margin-top:2px}
+  .resume .go{font-family:'Bebas Neue';font-size:20px;color:var(--red)}
+
+  /* ---------- WORKOUT ---------- */
+  .wkprog{padding:6px 18px 4px}
+  .wkprog .bar{height:7px;border-radius:99px;background:var(--card2);overflow:hidden}
+  .wkprog .fill{height:100%;background:linear-gradient(90deg,var(--red),var(--red2));border-radius:99px;transition:width .4s}
+  .wkprog .lab{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;font-weight:700;color:var(--mut)}
+  .exwrap{padding:8px 18px 140px}
+  .exhead{margin:8px 0 6px}
+  .exhead .ix{font-family:'Bebas Neue';font-size:15px;color:var(--red);letter-spacing:.1em}
+  .exhead h1{font-family:'Bebas Neue';font-weight:400;font-size:42px;line-height:.92;margin:2px 0 0;letter-spacing:.01em}
+  .exmeta{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
+  .tagx{font-size:12px;font-weight:700;color:var(--txt);background:var(--card2);border:1px solid var(--line);padding:7px 12px;border-radius:10px}
+  .tagx b{color:var(--red)}
+  .note{font-size:13px;color:var(--mut);font-weight:600;background:var(--card);border:1px solid var(--line);
+    border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:11px 14px;margin:12px 0 0;line-height:1.4}
+
+  .setgrid{margin-top:20px}
+  .setcols{display:grid;grid-template-columns:42px 1fr 1fr 48px;gap:8px;padding:0 4px 8px;align-items:center}
+  .setcols span{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--mut2);text-transform:uppercase;text-align:center}
+  .setcols span:first-child{text-align:left}
+  .setrow{
+    display:grid;grid-template-columns:42px 1fr 1fr 48px;gap:8px;align-items:center;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:10px 8px;margin-bottom:10px;transition:.2s;
+  }
+  .setrow.done{background:rgba(35,211,160,.07);border-color:rgba(35,211,160,.3)}
+  .setrow .snum{font-family:'Bebas Neue';font-size:24px;text-align:center;color:var(--mut)}
+  .setrow.done .snum{color:var(--rest)}
+  .stp{display:flex;align-items:center;justify-content:center;gap:4px}
+  .stp button{
+    width:34px;height:38px;border:none;border-radius:10px;background:var(--card2);
+    color:var(--txt);font-size:20px;font-weight:700;cursor:pointer;flex:0 0 auto;transition:.12s;
+    display:grid;place-items:center;
+  }
+  .stp button:active{transform:scale(.86);background:var(--red);color:#fff}
+  .stp input{
+    width:100%;min-width:0;background:transparent;border:none;color:var(--txt);
+    text-align:center;font-family:'Bebas Neue';font-size:28px;font-weight:400;
+    outline:none;padding:0;-moz-appearance:textfield;letter-spacing:.02em;
+  }
+  .stp input::-webkit-outer-spin-button,.stp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .chk{
+    width:46px;height:46px;border-radius:13px;border:2px solid var(--line2);background:var(--card2);
+    display:grid;place-items:center;cursor:pointer;font-size:22px;color:var(--mut2);transition:.18s;
+  }
+  .chk:active{transform:scale(.88)}
+  .setrow.done .chk{background:var(--rest);border-color:var(--rest);color:#04150f}
+
+  .exnav{
+    position:fixed;left:0;right:0;bottom:0;z-index:25;
+    padding:14px 18px calc(var(--safe-b) + 16px);
+    background:linear-gradient(0deg,var(--bg) 60%,transparent);
+    display:flex;gap:10px;max-width:520px;margin:0 auto;
+  }
+  .exnav .btn{padding:16px}
+  .exnav .prevb{flex:0 0 64px;width:64px}
+
+  /* ---------- TIMER ---------- */
+  #timer{
+    position:fixed;inset:0;z-index:100;display:none;
+    background:radial-gradient(120% 80% at 50% 30%,rgba(35,211,160,.14),var(--bg) 70%);
+    backdrop-filter:blur(2px);
+    flex-direction:column;align-items:center;justify-content:center;
+    padding:calc(var(--safe-t) + 20px) 24px calc(var(--safe-b) + 24px);
+    animation:fade .3s ease both;
+  }
+  #timer.show{display:flex}
+  #timer .kick{font-family:'Bebas Neue';font-size:22px;letter-spacing:.3em;color:var(--rest)}
+  .ring{position:relative;width:280px;height:280px;margin:14px 0 6px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .time{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .ring .time .big{font-family:'Bebas Neue';font-size:96px;line-height:.8;letter-spacing:.02em;
+    font-variant-numeric:tabular-nums}
+  .ring .time .nx{color:var(--mut);font-size:13px;font-weight:700;margin-top:10px;text-align:center;max-width:200px}
+  .ring .time .nx b{color:var(--txt)}
+  .tbtns{display:flex;gap:12px;margin-top:26px;width:100%;max-width:360px}
+  .tbtns .tb{
+    flex:1;border:1px solid var(--line2);background:var(--card);color:var(--txt);
+    border-radius:16px;padding:16px 0;font-weight:800;font-size:15px;cursor:pointer;transition:.15s;
+  }
+  .tbtns .tb:active{transform:scale(.95)}
+  .tbtns .tb.skip{background:linear-gradient(135deg,var(--rest),var(--rest2));border:none;color:#04150f;
+    box-shadow:0 8px 24px rgba(35,211,160,.3)}
+
+  /* ---------- SUMMARY ---------- */
+  .sumwrap{padding:8px 18px 60px}
+  .trophy{text-align:center;padding:30px 0 10px}
+  .trophy .em{font-size:64px}
+  .trophy h1{font-family:'Bebas Neue';font-size:52px;line-height:.9;margin-top:6px}
+  .trophy p{color:var(--mut);font-weight:600;margin-top:6px}
+  .sumcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px}
+  .sumcard h4{font-family:'Bebas Neue';font-weight:400;font-size:22px;letter-spacing:.02em}
+  .sumset{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--line);font-size:14px;font-weight:600}
+  .sumset:first-of-type{border-top:none}
+  .sumset .v{color:var(--mut)}
+  .sumset .v b{color:var(--txt)}
+
+  /* ---------- HISTORY ---------- */
+  .histwrap{padding:8px 18px 60px}
+  .hcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;transition:.15s}
+  .hcard:active{transform:scale(.99)}
+  .hcard .top{display:flex;justify-content:space-between;align-items:center}
+  .hcard h4{font-family:'Bebas Neue';font-weight:400;font-size:24px;letter-spacing:.02em}
+  .hcard .date{color:var(--mut);font-size:12px;font-weight:700}
+  .hcard .sub{color:var(--mut);font-size:13px;font-weight:600;margin-top:4px}
+  .hcard .detail{display:none;margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .hcard.open .detail{display:block}
+  .hcard .drow{display:flex;justify-content:space-between;font-size:13px;font-weight:600;padding:5px 0;color:var(--mut)}
+  .hcard .drow b{color:var(--txt);font-weight:700}
+  .empty{text-align:center;color:var(--mut2);padding:60px 20px;font-weight:600}
+  .empty .em{font-size:48px;display:block;margin-bottom:14px;opacity:.6}
+  .clearh{color:var(--red);font-size:13px;font-weight:700;cursor:pointer;text-align:center;padding:10px;margin-top:8px}
+  .hcard .times{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+  .hcard .tchip{font-size:11.5px;font-weight:700;color:var(--mut);background:var(--card2);border:1px solid var(--line);padding:5px 9px;border-radius:8px}
+  .hcard .tchip b{color:var(--txt)}
+  .hcard .tchip.dur{color:var(--rest)}
+
+  /* ---------- HOW-TO button ---------- */
+  .howto{margin-top:16px;width:100%;border:1px dashed var(--line2);background:rgba(35,211,160,.05);
+    color:var(--txt);font-weight:800;font-size:14px;padding:14px;border-radius:14px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:9px;transition:.15s}
+  .howto:active{transform:scale(.98);background:var(--card2)}
+  .howto .pl{color:var(--rest);font-size:13px}
+
+  /* ---------- bottom sheet modal ---------- */
+  .modal{position:fixed;inset:0;z-index:120;display:none;align-items:flex-end;justify-content:center}
+  .modal.show{display:flex;animation:fade .2s ease both}
+  .modal .scrim{position:absolute;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+  .sheet{position:relative;width:100%;max-width:520px;background:var(--bg2);
+    border:1px solid var(--line2);border-bottom:none;border-radius:26px 26px 0 0;
+    padding:8px 20px calc(var(--safe-b) + 26px);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    animation:slideup .32s cubic-bezier(.2,.85,.25,1) both}
+  @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+  .sheet .grab{width:42px;height:5px;border-radius:9px;background:var(--line2);margin:8px auto 12px}
+  .sheet h3{font-family:'Bebas Neue';font-weight:400;font-size:32px;letter-spacing:.02em;line-height:.96;padding-right:40px}
+  .sheet .close{position:absolute;top:16px;right:18px;width:36px;height:36px;border-radius:11px;
+    border:1px solid var(--line2);background:var(--card);color:var(--txt);font-weight:800;font-size:15px;cursor:pointer}
+  .figbox{background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.05),transparent 72%);
+    border:1px solid var(--line);border-radius:18px;margin:14px 0 18px;padding:6px}
+  .exsvg{width:100%;height:auto;display:block;color:var(--txt);max-height:236px}
+  .exsvg .lim{stroke:currentColor;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .exsvg .acc{stroke:var(--red);stroke-width:7.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .exsvg .db{fill:var(--red)}
+  .exsvg .head{fill:currentColor}
+  .exsvg .ref{stroke:var(--mut2);stroke-width:5;stroke-linecap:round;fill:none}
+  .exsvg .path{stroke:var(--rest);stroke-width:3;stroke-dasharray:5 7;fill:none;opacity:.85}
+  .cuehead{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin:2px 0 6px}
+  .cue{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;font-weight:600;color:var(--txt);
+    padding:9px 0;line-height:1.42;border-top:1px solid var(--line)}
+  .cue .num{font-family:'Bebas Neue';font-size:19px;color:var(--rest);flex:0 0 auto;width:16px;line-height:1.15}
+
+  /* ---------- data sheet ---------- */
+  .drow2{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:13px}
+  .drow2 h4{font-weight:800;font-size:15px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+  .drow2 p{color:var(--mut);font-size:12.5px;font-weight:600;line-height:1.45;margin-bottom:13px}
+  .dbtn{width:100%;border:none;border-radius:13px;font-weight:800;font-size:15px;padding:15px;cursor:pointer;color:#fff;transition:.15s;letter-spacing:.01em}
+  .dbtn:active{transform:scale(.98)}
+  .dbtn.exp{background:linear-gradient(135deg,var(--rest),var(--rest2));color:#04150f}
+  .dbtn.imp{background:var(--card2);border:1px solid var(--line2);color:var(--txt)}
+  .dbtn.danger{background:transparent;border:1.5px solid rgba(255,46,63,.55);color:var(--red)}
+  .drow2.dz{border-color:rgba(255,46,63,.28)}
+  .armbox{margin-top:13px;border:1px solid rgba(255,46,63,.55);background:rgba(255,46,63,.09);border-radius:14px;padding:15px;animation:pop .25s both}
+  .armbox p{color:var(--red2);font-weight:700;font-size:13px;margin-bottom:11px;line-height:1.4}
+  .dbtn.confirm{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;box-shadow:0 6px 20px rgba(255,46,63,.32)}
+  .dbtn.cancel{background:transparent;border:1px solid var(--line2);color:var(--mut);margin-top:9px}
+  .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 26px);transform:translateX(-50%) translateY(24px);
+    background:var(--card2);border:1px solid var(--line2);color:var(--txt);font-weight:700;font-size:14px;
+    padding:13px 22px;border-radius:14px;z-index:200;opacity:0;transition:.3s cubic-bezier(.2,.8,.2,1);pointer-events:none;max-width:90%;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- figure animations ---------- */
+  @keyframes anUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-36px)}}
+  @keyframes anDownBody{0%,100%{transform:translateY(0)}50%{transform:translateY(26px)}}
+  @keyframes anCalf{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  @keyframes anRow{0%,100%{transform:translate(0,0)}50%{transform:translate(-6px,-30px)}}
+  @keyframes anRaiseL{0%,100%{transform:rotate(0)}50%{transform:rotate(62deg)}}
+  @keyframes anRaiseR{0%,100%{transform:rotate(0)}50%{transform:rotate(-62deg)}}
+  @keyframes anCurlL{0%,100%{transform:rotate(0)}50%{transform:rotate(-118deg)}}
+  @keyframes anCurlR{0%,100%{transform:rotate(0)}50%{transform:rotate(118deg)}}
+  @keyframes anHinge{0%,100%{transform:rotate(0)}50%{transform:rotate(36deg)}}
+  @keyframes anLegRaise{0%,100%{transform:rotate(0)}50%{transform:rotate(-66deg)}}
+  @keyframes anArc{0%,100%{transform:rotate(0)}50%{transform:rotate(-86deg)}}
+  @keyframes anBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @media (prefers-reduced-motion:reduce){.exsvg *{animation:none!important}}
+
+  /* ---------- last-time strip ---------- */
+  .lasttime{margin-top:16px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 14px 14px 0;padding:12px 14px}
+  .lasttime .lh{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+  .lasttime .lh .d{color:var(--mut);font-weight:700;letter-spacing:0;text-transform:none;font-size:12px}
+  .lasttime .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .lchip{font-size:14px;font-weight:800;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:6px 11px;font-variant-numeric:tabular-nums}
+  .lchip span{color:var(--mut2);font-weight:700;font-size:11px;margin-right:3px}
+
+  /* ---------- history tabs + calendar ---------- */
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:4px;margin:4px 0 18px}
+  .seg button{flex:1;border:none;background:transparent;color:var(--mut);font-family:'Manrope';font-weight:800;font-size:14px;padding:11px;border-radius:9px;cursor:pointer;transition:.15s}
+  .seg button.on{background:var(--card2);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+  .calwrap{padding:0 18px 60px}
+  .calhead{display:flex;align-items:center;justify-content:space-between;margin:2px 0 16px}
+  .calhead .mlabel{font-family:'Bebas Neue';font-weight:400;font-size:28px;letter-spacing:.03em}
+  .calnav{width:42px;height:42px;border-radius:12px;border:1px solid var(--line2);background:var(--card);color:var(--txt);font-size:22px;cursor:pointer;display:grid;place-items:center;transition:.15s}
+  .calnav:active{transform:scale(.9);background:var(--card2)}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .calgrid .wd{text-align:center;font-size:11px;font-weight:800;color:var(--mut2);padding-bottom:6px}
+  .cell{aspect-ratio:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--mut2);background:transparent;border:1.5px solid transparent;transition:.12s}
+  .cell.has{background:var(--card);border-color:var(--line);color:var(--txt);cursor:pointer}
+  .cell.has:active{transform:scale(.92)}
+  .cell.today{border-color:var(--red)}
+  .cell.sel{background:linear-gradient(135deg,var(--red),var(--red2))!important;color:#fff!important;border-color:transparent;box-shadow:0 6px 16px rgba(255,46,63,.32)}
+  .cell .dot{width:6px;height:6px;border-radius:50%;background:var(--accent,var(--red));margin-top:4px}
+  .cell.sel .dot{background:#fff}
+  .caldetail{margin-top:18px}
+  .calhint{text-align:center;color:var(--mut2);font-weight:600;font-size:13px;padding:30px 16px}
+  .calhint .em{font-size:34px;display:block;margin-bottom:10px;opacity:.6}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <section id="home" class="view active">
+    <div class="hero">
+      <div class="logo bebas">FOR<span>GE</span></div>
+      <div class="tag">Dumbbell · Lean Muscle Build</div>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="n red" id="stStreak">0</div><div class="l">Day Streak</div></div>
+      <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Workouts</div></div>
+      <div class="stat"><div class="n" id="stWeek">0</div><div class="l">This Week</div></div>
+    </div>
+    <div id="resumeSlot"></div>
+    <div class="sechead"><h2>Pick Your Day</h2><a id="toData" style="margin-right:14px">Data</a><a id="toHist">History →</a></div>
+    <div class="days" id="dayList"></div>
+  </section>
+
+  <!-- WORKOUT -->
+  <section id="workout" class="view">
+    <div class="topbar">
+      <div class="iconbtn" id="wkBack">‹</div>
+      <div style="flex:1">
+        <div class="bebas" id="wkTitle" style="font-size:24px;line-height:1"></div>
+      </div>
+      <div class="iconbtn" id="wkQuit" style="font-size:15px;font-weight:800">✕</div>
+    </div>
+    <div class="wkprog">
+      <div class="bar"><div class="fill" id="wkFill" style="width:0%"></div></div>
+      <div class="lab"><span id="wkExLab"></span><span id="wkSetLab"></span></div>
+    </div>
+    <div class="exwrap" id="exwrap"></div>
+    <div class="exnav">
+      <button class="btn ghost prevb" id="navPrev">‹</button>
+      <button class="btn" id="navNext">NEXT EXERCISE ›</button>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="view">
+    <div class="topbar"><div class="iconbtn" id="sumBack">‹</div><div class="bebas" style="font-size:24px">SESSION COMPLETE</div></div>
+    <div class="sumwrap" id="sumwrap"></div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="history" class="view">
+    <div class="topbar"><div class="iconbtn" id="histBack">‹</div><div class="bebas" style="font-size:24px">TRAINING LOG</div></div>
+    <div class="pad"><div class="seg">
+      <button id="segCal" class="on">📅 Calendar</button>
+      <button id="segList">☰ List</button>
+    </div></div>
+    <div class="calwrap" id="calwrap"></div>
+    <div class="histwrap" id="histwrap" style="display:none"></div>
+  </section>
+
+</div>
+
+<!-- REST TIMER OVERLAY -->
+<div id="timer">
+  <div class="kick">REST</div>
+  <div class="ring">
+    <svg width="280" height="280" viewBox="0 0 280 280">
+      <circle cx="140" cy="140" r="128" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="14"/>
+      <circle id="ringFg" cx="140" cy="140" r="128" fill="none" stroke="var(--rest)" stroke-width="14"
+        stroke-linecap="round" stroke-dasharray="804" stroke-dashoffset="0"/>
+    </svg>
+    <div class="time">
+      <div class="big" id="tDisp">2:00</div>
+      <div class="nx" id="tNext"></div>
+    </div>
+  </div>
+  <div class="tbtns">
+    <button class="tb" id="tMinus">−15s</button>
+    <button class="tb skip" id="tSkip">SKIP</button>
+    <button class="tb" id="tPlus">+15s</button>
+  </div>
+</div>
+
+<!-- EXERCISE GUIDE MODAL -->
+<div class="modal" id="guideModal">
+  <div class="scrim" data-close="guide"></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <button class="close" data-close="guide">✕</button>
+    <h3 id="guideTitle"></h3>
+    <div class="figbox"><div id="guideFig"></div></div>
+    <div class="cuehead">How to perform</div>
+    <div id="guideCues"></div>
+  </div>
+</div>
+
+<!-- DATA MODAL -->
+<div class="modal" id="dataModal">
+  <div class="scrim" data-close="data"></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <button class="close" data-close="data">✕</button>
+    <h3>Your Data</h3>
+    <p style="color:var(--mut);font-size:13px;font-weight:600;margin-top:8px;line-height:1.45">
+      Your workout history lives only in this browser. Back it up or move it to another device here.</p>
+
+    <div class="drow2">
+      <h4>📤 Export backup</h4>
+      <p>Download all your logged workouts as a single <b>.json</b> file you can keep safe or move to another phone.</p>
+      <button class="dbtn exp" id="btnExport">Download backup file</button>
+    </div>
+
+    <div class="drow2">
+      <h4>📥 Import backup</h4>
+      <p>Load workouts from a previously exported <b>.json</b> file. This replaces your current history.</p>
+      <button class="dbtn imp" id="btnImport">Choose backup file…</button>
+      <input type="file" id="fileInput" accept="application/json,.json" style="display:none">
+    </div>
+
+    <div class="drow2 dz">
+      <h4>🗑️ Clear all data</h4>
+      <p>Permanently erases every logged workout and any in-progress session from this device.</p>
+      <button class="dbtn danger" id="btnClear1">Clear all cached data</button>
+      <div id="clearArm"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PLAN = [
+  { key:'upperA', name:'Upper A', kicker:'Chest · Back', accent:'#ff2e3f', exercises:[
+    { n:'Flat DB Bench Press', sets:4, rep:'6–10', rest:150, sw:40, sr:8 },
+    { n:'One-Arm DB Row', sets:4, rep:'8–12', rest:120, sw:45, sr:10, note:'Each arm. Or chest-supported on the incline bench.' },
+    { n:'Seated DB Shoulder Press', sets:3, rep:'8–12', rest:120, sw:25, sr:10 },
+    { n:'Incline DB Press', sets:3, rep:'10–12', rest:120, sw:35, sr:10 },
+    { n:'DB Lateral Raise', sets:3, rep:'12–20', rest:60, sw:12, sr:15 },
+    { n:'DB Bicep Curl', sets:3, rep:'10–15', rest:60, sw:20, sr:12 },
+    { n:'DB Overhead Triceps Ext.', sets:3, rep:'10–15', rest:60, sw:25, sr:12 },
+  ]},
+  { key:'lowerA', name:'Lower A', kicker:'Legs · Core', accent:'#23d3a0', exercises:[
+    { n:'DB Goblet Squat', sets:4, rep:'8–12', rest:150, sw:45, sr:10 },
+    { n:'DB Romanian Deadlift', sets:4, rep:'8–12', rest:150, sw:45, sr:10 },
+    { n:'DB Bulgarian Split Squat', sets:3, rep:'8–12', rest:120, sw:25, sr:10, note:'Per leg — log one side.' },
+    { n:'Standing DB Calf Raise', sets:4, rep:'12–20', rest:60, sw:35, sr:15 },
+    { n:'Hanging Leg Raise / Crunch', sets:3, rep:'12–15', rest:60, sw:0, sr:12, note:'Bodyweight or weighted.' },
+  ]},
+  { key:'upperB', name:'Upper B', kicker:'Shoulders · Arms', accent:'#ff5a47', exercises:[
+    { n:'Incline DB Press', sets:4, rep:'6–10', rest:150, sw:40, sr:8 },
+    { n:'Chest-Supported DB Row', sets:4, rep:'8–12', rest:120, sw:40, sr:10 },
+    { n:'DB Arnold Press', sets:3, rep:'10–12', rest:120, sw:25, sr:10 },
+    { n:'DB Pullover', sets:3, rep:'10–15', rest:90, sw:30, sr:12 },
+    { n:'DB Lateral Raise', sets:3, rep:'12–20', rest:60, sw:12, sr:15 },
+    { n:'DB Hammer Curl', sets:3, rep:'10–15', rest:60, sw:20, sr:12 },
+    { n:'DB Skull Crusher', sets:3, rep:'10–15', rest:60, sw:15, sr:12 },
+  ]},
+  { key:'lowerB', name:'Lower B', kicker:'Legs · Core', accent:'#14b8e0', exercises:[
+    { n:'DB Bulgarian Split Squat', sets:4, rep:'8–12', rest:150, sw:25, sr:10, note:'Per leg — log one side.' },
+    { n:'DB Romanian Deadlift', sets:4, rep:'8–12', rest:150, sw:45, sr:10 },
+    { n:'DB Reverse Lunge', sets:3, rep:'10–12', rest:120, sw:25, sr:10, note:'Per leg — log one side.' },
+    { n:'DB Single-Leg Calf Raise', sets:4, rep:'12–20', rest:60, sw:25, sr:15, note:'Per leg.' },
+    { n:'Plank', sets:3, rep:'45–60s', rest:60, sw:0, sr:45, metric:'sec', note:'Hold — log seconds.' },
+  ]},
+];
+
+/* ============================ EXERCISE GUIDES ============================ */
+const DB=(x,y)=>`<g class="db"><circle cx="${x-9}" cy="${y}" r="6.5"/><circle cx="${x+9}" cy="${y}" r="6.5"/><rect x="${x-9}" y="${y-2.6}" width="18" height="5.2" rx="1"/></g>`;
+
+const GUIDE = {
+  press_over:{ cues:[
+    'Brace your core and keep ribs down — don\'t arch the lower back.',
+    'Press the dumbbells straight overhead until your arms lock out.',
+    'Lower under control back to shoulder height every rep.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="64" y1="188" x2="176" y2="188"/>
+      <circle class="head" cx="120" cy="58" r="12"/>
+      <line class="lim" x1="120" y1="70" x2="120" y2="122"/>
+      <polyline class="lim" points="120,122 109,154 107,186"/><line class="lim" x1="107" y1="186" x2="122" y2="186"/>
+      <polyline class="lim" points="120,122 131,154 133,186"/><line class="lim" x1="133" y1="186" x2="148" y2="186"/>
+      <polyline class="acc" points="120,76 102,86 106,64"/>
+      <polyline class="acc" points="120,76 138,86 134,64"/>
+      <path class="path" d="M120 56 V26"/>
+      <g style="animation:anUp 2.4s ease-in-out infinite">${DB(120,60)}</g></svg>` },
+
+  press_flat:{ cues:[
+    'Plant your feet and lightly squeeze your shoulder blades into the bench.',
+    'Lower the dumbbells to mid-chest with elbows at about 45°.',
+    'Press up and slightly together without slamming the lockout.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 190">
+      <line class="ref" x1="56" y1="126" x2="202" y2="126"/>
+      <line class="ref" x1="72" y1="126" x2="66" y2="156"/><line class="ref" x1="188" y1="126" x2="194" y2="156"/>
+      <circle class="head" cx="76" cy="113" r="12"/>
+      <line class="lim" x1="88" y1="117" x2="150" y2="119"/>
+      <polyline class="lim" points="150,119 172,99 188,119"/><line class="lim" x1="188" y1="119" x2="200" y2="119"/>
+      <line class="acc" x1="103" y1="117" x2="103" y2="86"/>
+      <path class="path" d="M103 80 V52"/>
+      <g style="animation:anUp 2.2s ease-in-out infinite">${DB(103,82)}</g></svg>` },
+
+  press_incline:{ cues:[
+    'Set the bench to roughly 30–45°.',
+    'Lower to your upper chest, elbows tucked around 45°.',
+    'Drive the dumbbells up and over your collarbone.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 190">
+      <line class="ref" x1="60" y1="174" x2="184" y2="174"/>
+      <line class="ref" x1="86" y1="174" x2="150" y2="98"/><line class="ref" x1="86" y1="174" x2="124" y2="174"/>
+      <circle class="head" cx="151" cy="86" r="12"/>
+      <line class="lim" x1="143" y1="98" x2="100" y2="150"/>
+      <polyline class="lim" points="100,150 124,166 152,166"/>
+      <line class="acc" x1="134" y1="106" x2="134" y2="78"/>
+      <path class="path" d="M134 74 V46"/>
+      <g style="animation:anUp 2.3s ease-in-out infinite">${DB(134,76)}</g></svg>` },
+
+  row:{ cues:[
+    'Hinge at the hips with a flat back and proud chest.',
+    'Pull the dumbbell to your hip, leading with the elbow.',
+    'Squeeze the shoulder blade, then lower with control.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="50" y1="184" x2="200" y2="184"/>
+      <line class="lim" x1="110" y1="120" x2="154" y2="100"/>
+      <circle class="head" cx="166" cy="93" r="12"/>
+      <polyline class="lim" points="110,120 106,150 108,184"/><line class="lim" x1="108" y1="184" x2="124" y2="184"/>
+      <line class="acc" x1="152" y1="102" x2="152" y2="142"/>
+      <path class="path" d="M152 146 L140 116"/>
+      <g style="animation:anRow 2.4s ease-in-out infinite">${DB(152,148)}</g></svg>` },
+
+  raise_lat:{ cues:[
+    'Keep a soft bend in the elbows and a slight forward lean.',
+    'Raise out to the sides to shoulder height — lead with the elbows.',
+    'Lower slowly; don\'t swing or shrug up.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="78" y1="188" x2="162" y2="188"/>
+      <circle class="head" cx="120" cy="48" r="13"/>
+      <line class="lim" x1="96" y1="72" x2="144" y2="72"/>
+      <line class="lim" x1="120" y1="72" x2="120" y2="132"/>
+      <polyline class="lim" points="120,132 104,186"/><polyline class="lim" points="120,132 136,186"/>
+      <g style="transform-box:view-box;transform-origin:96px 72px;animation:anRaiseL 2.6s ease-in-out infinite"><line class="acc" x1="96" y1="72" x2="96" y2="120"/>${DB(96,124)}</g>
+      <g style="transform-box:view-box;transform-origin:144px 72px;animation:anRaiseR 2.6s ease-in-out infinite"><line class="acc" x1="144" y1="72" x2="144" y2="120"/>${DB(144,124)}</g></svg>` },
+
+  curl:{ cues:[
+    'Pin your elbows at your sides.',
+    'Curl the dumbbells up without swinging your torso.',
+    'Lower all the way down for a full stretch each rep.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="78" y1="188" x2="162" y2="188"/>
+      <circle class="head" cx="120" cy="48" r="13"/>
+      <line class="lim" x1="96" y1="72" x2="144" y2="72"/>
+      <line class="lim" x1="120" y1="72" x2="120" y2="132"/>
+      <polyline class="lim" points="120,132 104,186"/><polyline class="lim" points="120,132 136,186"/>
+      <line class="lim" x1="96" y1="72" x2="96" y2="108"/><line class="lim" x1="144" y1="72" x2="144" y2="108"/>
+      <g style="transform-box:view-box;transform-origin:96px 108px;animation:anCurlL 2.4s ease-in-out infinite"><line class="acc" x1="96" y1="108" x2="96" y2="142"/>${DB(96,146)}</g>
+      <g style="transform-box:view-box;transform-origin:144px 108px;animation:anCurlR 2.4s ease-in-out infinite"><line class="acc" x1="144" y1="108" x2="144" y2="142"/>${DB(144,146)}</g></svg>` },
+
+  tri_ext:{ cues:[
+    'Keep your elbows high and pointed forward, upper arms still.',
+    'Extend at the elbow only — straighten the dumbbells overhead.',
+    'Lower behind your head under control for the stretch.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="78" y1="188" x2="162" y2="188"/>
+      <circle class="head" cx="120" cy="58" r="13"/>
+      <line class="lim" x1="98" y1="80" x2="142" y2="80"/>
+      <line class="lim" x1="120" y1="80" x2="120" y2="138"/>
+      <polyline class="lim" points="120,138 105,188"/><polyline class="lim" points="120,138 135,188"/>
+      <line class="lim" x1="98" y1="80" x2="106" y2="46"/><line class="lim" x1="142" y1="80" x2="134" y2="46"/>
+      <line class="acc" x1="106" y1="46" x2="113" y2="70"/><line class="acc" x1="134" y1="46" x2="127" y2="70"/>
+      <path class="path" d="M120 62 V32"/>
+      <g style="animation:anUp 2.4s ease-in-out infinite">${DB(120,66)}</g></svg>` },
+
+  pullover:{ cues:[
+    'Lie back with a slight, fixed bend in your elbows.',
+    'Arc the dumbbell back over your head for a deep stretch.',
+    'Pull it back over your chest using your lats and chest.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="54" y1="132" x2="200" y2="132"/>
+      <line class="ref" x1="70" y1="132" x2="64" y2="160"/><line class="ref" x1="186" y1="132" x2="192" y2="160"/>
+      <circle class="head" cx="92" cy="118" r="12"/>
+      <line class="lim" x1="104" y1="122" x2="166" y2="124"/>
+      <polyline class="lim" points="166,124 186,104 200,124"/>
+      <path class="path" d="M108 80 A 42 42 0 0 0 66 120"/>
+      <g style="transform-box:view-box;transform-origin:108px 122px;animation:anArc 3s ease-in-out infinite"><line class="acc" x1="108" y1="122" x2="108" y2="84"/>${DB(108,80)}</g></svg>` },
+
+  squat:{ cues:[
+    'Hold the dumbbell at your chest, elbows pointing down.',
+    'Sit between your hips; knees track over your toes.',
+    'Drive through your mid-foot to stand tall.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="60" y1="186" x2="180" y2="186"/>
+      <path class="path" d="M198 100 V152 M198 100 l-5 8 M198 100 l5 8 M198 152 l-5 -8 M198 152 l5 -8"/>
+      <g style="animation:anDownBody 2.8s ease-in-out infinite">
+        <circle class="head" cx="116" cy="52" r="12"/>
+        <line class="lim" x1="116" y1="64" x2="112" y2="112"/>
+        <polyline class="lim" points="112,112 134,136 116,166"/><line class="lim" x1="116" y1="166" x2="100" y2="166"/>
+        <line class="acc" x1="116" y1="80" x2="138" y2="96"/>${DB(140,100)}</g></svg>` },
+
+  hinge:{ cues:[
+    'Soft knees, push your hips back — it\'s a hinge, not a squat.',
+    'Keep the dumbbells close and your back flat.',
+    'Feel the hamstring stretch, then drive your hips forward.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="60" y1="186" x2="180" y2="186"/>
+      <polyline class="lim" points="116,116 112,150 114,186"/><line class="lim" x1="114" y1="186" x2="130" y2="186"/>
+      <path class="path" d="M150 96 A 40 40 0 0 1 138 150"/>
+      <g style="transform-box:view-box;transform-origin:116px 116px;animation:anHinge 2.8s ease-in-out infinite">
+        <circle class="head" cx="118" cy="58" r="12"/>
+        <line class="lim" x1="116" y1="116" x2="118" y2="70"/>
+        <line class="acc" x1="117" y1="76" x2="113" y2="116"/>${DB(113,120)}</g></svg>` },
+
+  lunge:{ cues:[
+    'Keep most of your weight through the front heel.',
+    'Drop straight down — front knee stacked over mid-foot.',
+    'Stay tall through the torso; push back up with the front leg.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="50" y1="184" x2="200" y2="184"/>
+      <g style="animation:anDownBody 2.8s ease-in-out infinite">
+        <circle class="head" cx="118" cy="54" r="12"/>
+        <line class="lim" x1="118" y1="66" x2="118" y2="116"/>
+        <polyline class="lim" points="118,116 142,144 142,164"/><line class="lim" x1="142" y1="164" x2="158" y2="164"/>
+        <polyline class="lim" points="118,116 96,148 86,160"/>
+        <line class="lim" x1="118" y1="74" x2="102" y2="116"/>${DB(101,120)}
+        <line class="lim" x1="118" y1="74" x2="134" y2="116"/>${DB(135,120)}</g></svg>` },
+
+  calf:{ cues:[
+    'Rise onto the balls of your feet as high as you can.',
+    'Pause and squeeze hard at the very top.',
+    'Lower slowly for a full stretch at the bottom.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="60" y1="188" x2="180" y2="188"/>
+      <path class="path" d="M196 158 V124 M196 124 l-5 8 M196 124 l5 8"/>
+      <g style="animation:anCalf 2s ease-in-out infinite">
+        <circle class="head" cx="120" cy="60" r="12"/>
+        <line class="lim" x1="120" y1="72" x2="120" y2="126"/>
+        <polyline class="lim" points="120,126 116,158 114,186"/><line class="lim" x1="114" y1="186" x2="132" y2="186"/>
+        <line class="lim" x1="120" y1="82" x2="106" y2="120"/>${DB(105,124)}
+        <line class="lim" x1="120" y1="82" x2="134" y2="120"/>${DB(135,124)}</g></svg>` },
+
+  legraise:{ cues:[
+    'Kill the swing — keep your body still and controlled.',
+    'Raise your legs (or curl your torso) by rounding the lower back.',
+    'Lower slowly and keep constant tension on the abs.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 200">
+      <line class="ref" x1="60" y1="30" x2="180" y2="30"/>
+      <line class="lim" x1="120" y1="78" x2="108" y2="30"/><line class="lim" x1="120" y1="78" x2="132" y2="30"/>
+      <circle class="head" cx="120" cy="66" r="11"/>
+      <line class="lim" x1="120" y1="78" x2="120" y2="126"/>
+      <path class="path" d="M120 180 A 56 56 0 0 1 170 138"/>
+      <g style="transform-box:view-box;transform-origin:120px 126px;animation:anLegRaise 3s ease-in-out infinite">
+        <polyline class="acc" points="120,126 120,154 122,180"/></g></svg>` },
+
+  plank:{ cues:[
+    'Forearms under your shoulders, body in one straight line.',
+    'Squeeze your glutes and brace your abs hard.',
+    'Don\'t let the hips sag or pike up — and keep breathing.'],
+    fig:`<svg class="exsvg" viewBox="0 0 240 190">
+      <line class="ref" x1="40" y1="170" x2="200" y2="170"/>
+      <g style="animation:anBob 3s ease-in-out infinite">
+        <line class="acc" x1="70" y1="168" x2="104" y2="168"/>
+        <line class="lim" x1="104" y1="168" x2="104" y2="142"/>
+        <polyline class="lim" points="104,142 152,156 190,168"/>
+        <circle class="head" cx="95" cy="136" r="11"/></g></svg>` },
+};
+
+const NAME2PAT = {
+  'Flat DB Bench Press':'press_flat','One-Arm DB Row':'row','Seated DB Shoulder Press':'press_over',
+  'Incline DB Press':'press_incline','DB Lateral Raise':'raise_lat','DB Bicep Curl':'curl',
+  'DB Overhead Triceps Ext.':'tri_ext','DB Goblet Squat':'squat','DB Romanian Deadlift':'hinge',
+  'DB Bulgarian Split Squat':'lunge','Standing DB Calf Raise':'calf','Hanging Leg Raise / Crunch':'legraise',
+  'Chest-Supported DB Row':'row','DB Arnold Press':'press_over','DB Pullover':'pullover',
+  'DB Hammer Curl':'curl','DB Skull Crusher':'tri_ext','DB Reverse Lunge':'lunge',
+  'DB Single-Leg Calf Raise':'calf','Plank':'plank',
+};
+
+/* ============================ STORAGE ============================ */
+const LS = {
+  get:(k,f)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):f; }catch(e){ return f; } },
+  set:(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} },
+  del:(k)=>{ try{ localStorage.removeItem(k); }catch(e){} },
+};
+const K_HIST='forge_history_v1';
+const K_ACTIVE='forge_active_v1';
+
+/* ============================ STATE ============================ */
+let session = null;   // active workout
+let wakeLock = null;
+
+/* ============================ HELPERS ============================ */
+const $=id=>document.getElementById(id);
+const fmtTime=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $(view).classList.add('active');
+  window.scrollTo(0,0);
+}
+function lastDoneFor(dayKey){
+  const h=LS.get(K_HIST,[]);
+  return h.find(s=>s.dayKey===dayKey);
+}
+// most recent logged sets for a given exercise name, across all history
+function prevForExercise(name){
+  const h=LS.get(K_HIST,[]);
+  for(const s of h){
+    const ex=s.exercises.find(e=>e.name===name);
+    if(ex && ex.sets && ex.sets.length) return ex.sets;
+  }
+  return null;
+}
+// same, but include the date of that session
+function prevSessionForExercise(name){
+  const h=LS.get(K_HIST,[]);
+  for(const s of h){
+    const ex=s.exercises.find(e=>e.name===name);
+    if(ex && ex.sets && ex.sets.length) return { ts:s.ts, sets:ex.sets };
+  }
+  return null;
+}
+function fmtSet(s,metric){
+  if(metric==='sec') return s.reps+'s';
+  return (s.weight>0 ? s.weight+'×'+s.reps : 'BW×'+s.reps);
+}
+
+/* ============================ HOME ============================ */
+function renderHome(){
+  const h=LS.get(K_HIST,[]);
+  $('stTotal').textContent=h.length;
+  // this week
+  const now=new Date(); const weekAgo=now.getTime()-7*864e5;
+  $('stWeek').textContent=h.filter(s=>s.ts>weekAgo).length;
+  // streak: consecutive days with a workout, counting back from today/yesterday
+  $('stStreak').textContent=calcStreak(h);
+
+  // resume banner
+  const active=LS.get(K_ACTIVE,null);
+  const slot=$('resumeSlot'); slot.innerHTML='';
+  if(active && active.exercises){
+    const done=active.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
+    const total=active.exercises.reduce((a,e)=>a+e.sets.length,0);
+    slot.innerHTML=`<div class="resume" id="resumeBtn">
+      <div><div class="t">Resume ${active.dayName}</div><div class="s">${done}/${total} sets logged</div></div>
+      <div class="go bebas">RESUME ▶</div></div>`;
+    $('resumeBtn').onclick=()=>{ session=active; openWorkout(); };
+  }
+
+  const list=$('dayList'); list.innerHTML='';
+  PLAN.forEach((d,i)=>{
+    const last=lastDoneFor(d.key);
+    const lastTxt=last?`Last done ${relDate(last.ts)}`:'Not logged yet';
+    const el=document.createElement('div');
+    el.className='day'; el.style.setProperty('--accent',d.accent);
+    el.style.animationDelay=(i*0.05)+'s';
+    el.innerHTML=`<div class="glow"></div>
+      <div class="kicker">${d.kicker}</div>
+      <h3>${d.name}</h3>
+      <div class="meta"><span><b>${d.exercises.length}</b> exercises</span>
+        <span><b>${d.exercises.reduce((a,e)=>a+e.sets,0)}</b> sets</span></div>
+      <div class="last ${last?'done':''}">${last?'✓ ':''}${lastTxt}</div>`;
+    el.onclick=()=>startSession(d.key);
+    list.appendChild(el);
+  });
+}
+function calcStreak(h){
+  if(!h.length) return 0;
+  const days=new Set(h.map(s=>new Date(s.ts).toDateString()));
+  let streak=0; let d=new Date();
+  // allow streak to count if worked out today or yesterday
+  if(!days.has(d.toDateString())){ d.setDate(d.getDate()-1); if(!days.has(d.toDateString())) return 0; }
+  while(days.has(d.toDateString())){ streak++; d.setDate(d.getDate()-1); }
+  return streak;
+}
+function relDate(ts){
+  const diff=Math.floor((Date.now()-ts)/864e5);
+  if(diff<=0) return 'today';
+  if(diff===1) return 'yesterday';
+  if(diff<7) return diff+' days ago';
+  return new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+}
+
+/* ============================ SESSION ============================ */
+function startSession(dayKey){
+  const day=PLAN.find(d=>d.key===dayKey);
+  session={
+    dayKey, dayName:day.name, ts:Date.now(), current:0,
+    exercises: day.exercises.map(ex=>{
+      const prev=prevForExercise(ex.n);
+      const sets=[];
+      for(let i=0;i<ex.sets;i++){
+        const p=prev && prev[i] ? prev[i] : (prev && prev[prev.length-1] ? prev[prev.length-1] : null);
+        sets.push({ weight: p?p.weight:ex.sw, reps: p?p.reps:ex.sr, done:false });
+      }
+      return { name:ex.n, rep:ex.rep, rest:ex.rest, metric:ex.metric||'reps', note:ex.note||'', sets };
+    })
+  };
+  saveActive();
+  openWorkout();
+}
+function saveActive(){ if(session) LS.set(K_ACTIVE,session); }
+
+function openWorkout(){
+  go('workout');
+  requestWake();
+  renderExercise();
+}
+function renderExercise(){
+  const ex=session.exercises[session.current];
+  $('wkTitle').textContent=session.dayName;
+  // progress
+  const done=session.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
+  const total=session.exercises.reduce((a,e)=>a+e.sets.length,0);
+  $('wkFill').style.width=Math.round(done/total*100)+'%';
+  $('wkExLab').textContent=`Exercise ${session.current+1} of ${session.exercises.length}`;
+  $('wkSetLab').textContent=`${done}/${total} sets`;
+
+  const isLast=session.current===session.exercises.length-1;
+  $('navNext').textContent=isLast?'FINISH WORKOUT ✓':'NEXT EXERCISE ›';
+  $('navPrev').style.visibility=session.current===0?'hidden':'visible';
+
+  const metricLabel=ex.metric==='sec'?'SEC':'REPS';
+  const prev=prevSessionForExercise(ex.name);
+  const lastHTML = prev ? `
+    <div class="lasttime">
+      <div class="lh">Last time<span class="d">${new Date(prev.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span></div>
+      <div class="chips">${prev.sets.map((s,i)=>`<div class="lchip"><span>${i+1}</span>${fmtSet(s,ex.metric)}</div>`).join('')}</div>
+    </div>` : '';
+  const wrap=$('exwrap');
+  wrap.innerHTML=`
+    <div class="exhead">
+      <div class="ix">EXERCISE ${session.current+1} / ${session.exercises.length}</div>
+      <h1>${ex.name}</h1>
+    </div>
+    <div class="exmeta">
+      <div class="tagx"><b>${ex.sets.length}</b> sets</div>
+      <div class="tagx">target <b>${ex.rep}</b></div>
+      <div class="tagx">rest <b>${fmtTime(ex.rest)}</b></div>
+    </div>
+    ${ex.note?`<div class="note">⚑ ${ex.note}</div>`:''}
+    <button class="howto" id="howBtn"><span class="pl">▶</span> How to perform this exercise</button>
+    ${lastHTML}
+    <div class="setgrid">
+      <div class="setcols"><span>SET</span><span>WEIGHT (LB)</span><span>${metricLabel}</span><span></span></div>
+      <div id="setRows"></div>
+    </div>`;
+
+  const rows=$('setRows');
+  ex.sets.forEach((st,i)=>{
+    const r=document.createElement('div');
+    r.className='setrow'+(st.done?' done':'');
+    r.innerHTML=`
+      <div class="snum">${i+1}</div>
+      <div class="stp">
+        <button data-a="w" data-i="${i}" data-d="-1">−</button>
+        <input type="number" inputmode="numeric" id="w${i}" value="${st.weight}">
+        <button data-a="w" data-i="${i}" data-d="1">+</button>
+      </div>
+      <div class="stp">
+        <button data-a="r" data-i="${i}" data-d="-1">−</button>
+        <input type="number" inputmode="numeric" id="r${i}" value="${st.reps}">
+        <button data-a="r" data-i="${i}" data-d="1">+</button>
+      </div>
+      <div class="chk" data-chk="${i}">${st.done?'✓':''}</div>`;
+    rows.appendChild(r);
+  });
+
+  // wire steppers
+  rows.querySelectorAll('button[data-a]').forEach(b=>{
+    b.onclick=()=>{
+      const i=+b.dataset.i, a=b.dataset.a, d=+b.dataset.d;
+      const inp=$( (a==='w'?'w':'r')+i );
+      const step = a==='w' ? 2.5 : 1;
+      let v=parseFloat(inp.value)||0; v=Math.max(0, Math.round((v+d*step)*10)/10);
+      inp.value=v; commitVal(i,a,v);
+    };
+  });
+  rows.querySelectorAll('input').forEach(inp=>{
+    inp.onchange=()=>{
+      const i=+inp.id.slice(1), a=inp.id[0];
+      let v=parseFloat(inp.value)||0; v=Math.max(0,v); inp.value=v; commitVal(i,a,v);
+    };
+  });
+  rows.querySelectorAll('[data-chk]').forEach(c=>{
+    c.onclick=()=>toggleSet(+c.dataset.chk);
+  });
+  $('howBtn').onclick=()=>openGuide(ex.name);
+}
+function commitVal(i,a,v){
+  const st=session.exercises[session.current].sets[i];
+  if(a==='w') st.weight=v; else st.reps=v;
+  saveActive();
+}
+function toggleSet(i){
+  const ex=session.exercises[session.current];
+  const st=ex.sets[i];
+  st.done=!st.done;
+  // capture current input values
+  const w=$('w'+i), r=$('r'+i);
+  if(w) st.weight=parseFloat(w.value)||0;
+  if(r) st.reps=parseFloat(r.value)||0;
+  saveActive();
+  renderExercise();
+  if(st.done){
+    // prefill next set with this one's values
+    if(ex.sets[i+1] && !ex.sets[i+1].done){
+      ex.sets[i+1].weight=st.weight; ex.sets[i+1].reps=st.reps;
+      saveActive(); renderExercise();
+    }
+    // launch rest timer (unless it was the very last set of last exercise)
+    startTimer(ex.rest, i, ex);
+  }
+}
+
+/* ============================ NAV ============================ */
+$('navNext').onclick=()=>{
+  if(session.current<session.exercises.length-1){ session.current++; saveActive(); renderExercise(); }
+  else finishWorkout();
+};
+$('navPrev').onclick=()=>{ if(session.current>0){ session.current--; saveActive(); renderExercise(); } };
+$('wkBack').onclick=()=>{ go('home'); renderHome(); releaseWake(); };
+$('wkQuit').onclick=()=>{
+  if(confirm('Quit this workout? Your progress stays saved and you can resume from the home screen.')){
+    go('home'); renderHome(); releaseWake();
+  }
+};
+
+/* ============================ TIMER ============================ */
+let tState={ remaining:0, total:0, raf:null, last:0, running:false };
+const RING_C=2*Math.PI*128;
+$('ringFg').setAttribute('stroke-dasharray',RING_C.toFixed(1));
+
+function startTimer(sec, setIndex, ex){
+  // figure out "next up" text
+  let nextTxt='';
+  const nextSet=ex.sets[setIndex+1];
+  if(nextSet){ nextTxt=`Next up: <b>Set ${setIndex+2}</b> of ${ex.name}`; }
+  else {
+    const ne=session.exercises[session.current+1];
+    nextTxt=ne?`Next up: <b>${ne.name}</b>`:`<b>Last set done</b> — finish strong`;
+  }
+  $('tNext').innerHTML=nextTxt;
+  tState.total=sec; tState.remaining=sec; tState.running=true; tState.last=performance.now();
+  $('tDisp').textContent=fmtTime(Math.ceil(sec));
+  setRing(1);
+  $('timer').classList.add('show');
+  cancelAnimationFrame(tState.raf);
+  tickLoop();
+}
+function tickLoop(){
+  tState.raf=requestAnimationFrame(()=>{
+    const now=performance.now();
+    const dt=(now-tState.last)/1000; tState.last=now;
+    if(tState.running) tState.remaining-=dt;
+    const rem=Math.max(0,tState.remaining);
+    $('tDisp').textContent=fmtTime(Math.ceil(rem));
+    setRing(rem/tState.total);
+    // countdown beeps
+    const whole=Math.ceil(rem);
+    if(rem>0 && whole<=3 && whole!==tState._lastBeep){ tState._lastBeep=whole; beep(660,.09); }
+    if(rem<=0){ endTimer(); return; }
+    tickLoop();
+  });
+}
+function setRing(frac){ $('ringFg').setAttribute('stroke-dashoffset', (RING_C*(1-frac)).toFixed(1)); }
+function endTimer(){
+  cancelAnimationFrame(tState.raf); tState.running=false; tState._lastBeep=null;
+  beep(880,.18); setTimeout(()=>beep(1100,.22),140);
+  if(navigator.vibrate) navigator.vibrate([120,60,120]);
+  $('timer').classList.remove('show');
+}
+function closeTimer(){ cancelAnimationFrame(tState.raf); tState.running=false; tState._lastBeep=null; $('timer').classList.remove('show'); }
+$('tSkip').onclick=closeTimer;
+$('tPlus').onclick=()=>{ tState.remaining+=15; tState.total=Math.max(tState.total,tState.remaining); };
+$('tMinus').onclick=()=>{ tState.remaining=Math.max(0,tState.remaining-15); };
+
+/* Web Audio beep */
+let actx=null;
+function beep(freq,dur){
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended') actx.resume();
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    o.connect(g); g.connect(actx.destination);
+    g.gain.setValueAtTime(.0001,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.4,actx.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+dur);
+    o.start(); o.stop(actx.currentTime+dur+.02);
+  }catch(e){}
+}
+
+/* ============================ FINISH ============================ */
+function finishWorkout(){
+  // save to history (only sets that were marked done OR keep all? keep all logged)
+  const record={
+    dayKey:session.dayKey, dayName:session.dayName, ts:session.ts, finishedTs:Date.now(),
+    exercises:session.exercises.map(e=>({
+      name:e.name,
+      sets:e.sets.filter(s=>s.done).map(s=>({weight:s.weight,reps:s.reps}))
+    })).filter(e=>e.sets.length>0)
+  };
+  const totalSets=record.exercises.reduce((a,e)=>a+e.sets.length,0);
+  const volume=record.exercises.reduce((a,e)=>a+e.sets.reduce((b,s)=>b+s.weight*s.reps,0),0);
+
+  if(totalSets>0){
+    const h=LS.get(K_HIST,[]); h.unshift(record); LS.set(K_HIST,h);
+  }
+  LS.del(K_ACTIVE);
+  closeTimer(); releaseWake();
+  renderSummary(record,totalSets,volume);
+  go('summary');
+}
+function renderSummary(rec,totalSets,volume){
+  const dur=Math.round((rec.finishedTs-rec.ts)/60000);
+  let html=`<div class="trophy">
+      <div class="em">🔥</div>
+      <h1>${rec.dayName} Done</h1>
+      <p>${totalSets} sets · ${Math.round(volume).toLocaleString()} lb total volume · ~${dur} min</p>
+    </div>`;
+  if(rec.exercises.length===0){
+    html+=`<div class="empty">No sets were logged. Mark sets with ✓ to save them.</div>`;
+  }
+  rec.exercises.forEach(e=>{
+    html+=`<div class="sumcard"><h4>${e.name}</h4>`;
+    e.sets.forEach((s,i)=>{
+      html+=`<div class="sumset"><span>Set ${i+1}</span><span class="v"><b>${s.weight}</b> lb × <b>${s.reps}</b></span></div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`<div style="margin-top:22px"><button class="btn" id="sumHome">BACK TO HOME</button></div>`;
+  $('sumwrap').innerHTML=html;
+  $('sumHome').onclick=()=>{ session=null; go('home'); renderHome(); };
+}
+$('sumBack').onclick=()=>{ session=null; go('home'); renderHome(); };
+
+/* ============================ HISTORY ============================ */
+function histCardHTML(rec, open){
+  const sets=rec.exercises.reduce((a,e)=>a+e.sets.length,0);
+  const vol=rec.exercises.reduce((a,e)=>a+e.sets.reduce((b,s)=>b+s.weight*s.reps,0),0);
+  const tOpt={hour:'numeric',minute:'2-digit'};
+  const start=new Date(rec.ts).toLocaleTimeString(undefined,tOpt);
+  const hasEnd=rec.finishedTs && rec.finishedTs>rec.ts;
+  const end=hasEnd?new Date(rec.finishedTs).toLocaleTimeString(undefined,tOpt):'—';
+  const durTxt=hasEnd?fmtDur(rec.finishedTs-rec.ts):'n/a';
+  return `<div class="hcard${open?' open':''}">
+    <div class="top"><h4>${rec.dayName}</h4><span class="date">${new Date(rec.ts).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span></div>
+    <div class="sub">${rec.exercises.length} exercises · ${sets} sets · ${Math.round(vol).toLocaleString()} lb volume</div>
+    <div class="times">
+      <span class="tchip">Start <b>${start}</b></span>
+      <span class="tchip">End <b>${end}</b></span>
+      <span class="tchip dur">⏱ Total <b>${durTxt}</b></span>
+    </div>
+    <div class="detail">${rec.exercises.map(e=>`
+      <div class="drow"><b>${e.name}</b><span>${e.sets.map(s=>s.weight+'×'+s.reps).join(', ')}</span></div>`).join('')}</div>
+  </div>`;
+}
+function renderHistory(){
+  const h=LS.get(K_HIST,[]);
+  const w=$('histwrap');
+  if(!h.length){
+    w.innerHTML=`<div class="empty"><span class="em">📓</span>No workouts logged yet.<br>Crush one and it'll show up here.</div>`;
+    return;
+  }
+  let html=h.map(rec=>histCardHTML(rec,false)).join('');
+  html+=`<div class="clearh" id="clearHist">Clear all history</div>`;
+  w.innerHTML=html;
+  w.querySelectorAll('.hcard').forEach(c=>c.onclick=()=>c.classList.toggle('open'));
+  $('clearHist').onclick=()=>{ openData(); };
+}
+function fmtDur(ms){
+  const m=Math.round(ms/60000);
+  if(m<1) return '<1 min';
+  if(m<60) return m+' min';
+  const h=Math.floor(m/60), r=m%60;
+  return r?`${h}h ${r}m`:`${h}h`;
+}
+
+/* ---------- calendar ---------- */
+let calY=null, calM=null, calSel=null, histMode='calendar';
+const WD=['S','M','T','W','T','F','S'];
+function dkey(d){ return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); }
+function renderCalendar(){
+  const h=LS.get(K_HIST,[]);
+  if(calY===null){ const n=new Date(); calY=n.getFullYear(); calM=n.getMonth(); }
+  const idx={};
+  h.forEach(r=>{ const k=dkey(new Date(r.ts)); (idx[k]=idx[k]||[]).push(r); });
+
+  const monthName=new Date(calY,calM,1).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  const firstDow=new Date(calY,calM,1).getDay();
+  const nDays=new Date(calY,calM+1,0).getDate();
+  const now=new Date(); const thisMonth=now.getFullYear()===calY&&now.getMonth()===calM;
+
+  let cells=WD.map(w=>`<div class="wd">${w}</div>`).join('');
+  for(let i=0;i<firstDow;i++) cells+=`<div class="cell blank"></div>`;
+  for(let day=1;day<=nDays;day++){
+    const k=calY+'-'+calM+'-'+day;
+    const recs=idx[k];
+    const accent=recs?((PLAN.find(p=>p.key===recs[0].dayKey)||{}).accent||'var(--red)'):'';
+    const cls=['cell']; if(recs)cls.push('has'); if(thisMonth&&now.getDate()===day)cls.push('today'); if(calSel===k)cls.push('sel');
+    cells+=`<div class="${cls.join(' ')}"${recs?` data-day="${k}"`:''}${accent?` style="--accent:${accent}"`:''}>${day}${recs?'<span class="dot"></span>':''}</div>`;
+  }
+
+  let detail;
+  if(calSel && idx[calSel]){
+    detail=idx[calSel].map(r=>histCardHTML(r,true)).join('');
+  } else {
+    const any=Object.keys(idx).some(k=>k.startsWith(calY+'-'+calM+'-'));
+    detail=`<div class="calhint"><span class="em">${any?'👆':'🗓️'}</span>${any?'Tap a highlighted day to see that workout.':'No workouts logged this month.'}</div>`;
+  }
+
+  $('calwrap').innerHTML=`
+    <div class="calhead">
+      <button class="calnav" id="calPrev">‹</button>
+      <div class="mlabel">${monthName}</div>
+      <button class="calnav" id="calNext">›</button>
+    </div>
+    <div class="calgrid">${cells}</div>
+    <div class="caldetail">${detail}</div>`;
+
+  $('calPrev').onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} calSel=null; renderCalendar(); };
+  $('calNext').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} calSel=null; renderCalendar(); };
+  $('calwrap').querySelectorAll('[data-day]').forEach(c=>{
+    c.onclick=()=>{ calSel=(calSel===c.dataset.day?null:c.dataset.day); renderCalendar(); };
+  });
+  $('calwrap').querySelectorAll('.caldetail .hcard').forEach(c=>{
+    c.onclick=()=>c.classList.toggle('open');
+  });
+}
+function showHistTab(mode){
+  histMode=mode;
+  $('segCal').classList.toggle('on',mode==='calendar');
+  $('segList').classList.toggle('on',mode==='list');
+  $('calwrap').style.display=mode==='calendar'?'block':'none';
+  $('histwrap').style.display=mode==='list'?'block':'none';
+  if(mode==='calendar') renderCalendar(); else renderHistory();
+}
+$('segCal').onclick=()=>showHistTab('calendar');
+$('segList').onclick=()=>showHistTab('list');
+$('toHist').onclick=()=>{ go('history'); showHistTab(histMode); };
+$('histBack').onclick=()=>{ go('home'); renderHome(); };
+
+/* ============================ MODALS ============================ */
+function openModal(id){ $(id).classList.add('show'); }
+function closeModal(id){ $(id).classList.remove('show'); }
+document.querySelectorAll('[data-close]').forEach(el=>{
+  el.onclick=()=>closeModal(el.dataset.close==='guide'?'guideModal':'dataModal');
+});
+
+function openGuide(name){
+  const pat=NAME2PAT[name];
+  const g=pat?GUIDE[pat]:null;
+  $('guideTitle').textContent=name;
+  if(g){
+    $('guideFig').innerHTML=g.fig;
+    $('guideCues').innerHTML=g.cues.map((c,i)=>`<div class="cue"><span class="num">${i+1}</span><span>${c}</span></div>`).join('');
+  } else {
+    $('guideFig').innerHTML='';
+    $('guideCues').innerHTML='<div class="cue"><span>No guide available for this exercise.</span></div>';
+  }
+  openModal('guideModal');
+}
+
+/* ============================ DATA TOOLS ============================ */
+function openData(){ $('clearArm').innerHTML=''; openModal('dataModal'); }
+$('toData').onclick=openData;
+
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// EXPORT
+$('btnExport').onclick=()=>{
+  const data={ app:'FORGE', version:1, exportedAt:new Date().toISOString(), history:LS.get(K_HIST,[]) };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const stamp=new Date().toISOString().slice(0,10);
+  a.href=url; a.download=`forge-backup-${stamp}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  toast('Backup downloaded ✓');
+};
+
+// IMPORT
+$('btnImport').onclick=()=>$('fileInput').click();
+$('fileInput').onchange=(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(reader.result);
+      const hist=Array.isArray(parsed)?parsed:parsed.history;
+      if(!Array.isArray(hist)) throw new Error('bad');
+      // light validation
+      const ok=hist.every(r=>r&&typeof r.dayName==='string'&&Array.isArray(r.exercises));
+      if(!ok) throw new Error('bad');
+      if(confirm(`Import ${hist.length} workout${hist.length===1?'':'s'}? This will REPLACE your current history.`)){
+        LS.set(K_HIST,hist);
+        toast(`Imported ${hist.length} workout${hist.length===1?'':'s'} ✓`);
+        renderHistory();
+      }
+    }catch(err){ toast('Could not read that file ✗'); }
+    $('fileInput').value='';
+  };
+  reader.readAsText(file);
+};
+
+// CLEAR — extra confirm to be really sure
+$('btnClear1').onclick=()=>{
+  $('clearArm').innerHTML=`<div class="armbox">
+    <p>⚠️ This permanently deletes ALL logged workouts and any in-progress session. There is no undo. Make sure you've exported a backup first.</p>
+    <button class="dbtn confirm" id="btnClear2">Yes — permanently delete everything</button>
+    <button class="dbtn cancel" id="btnClearCancel">Cancel</button>
+  </div>`;
+  $('btnClearCancel').onclick=()=>{ $('clearArm').innerHTML=''; };
+  $('btnClear2').onclick=()=>{
+    // final native confirm = a real second click + OS-level confirm
+    if(confirm('Final check: delete ALL workout data permanently?')){
+      LS.del(K_HIST); LS.del(K_ACTIVE); session=null;
+      $('clearArm').innerHTML='';
+      toast('All data cleared');
+      renderHistory(); renderHome();
+    }
+  };
+};
+
+/* ============================ WAKE LOCK ============================ */
+async function requestWake(){ try{ if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){} }
+function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && $('workout').classList.contains('active')) requestWake(); });
+
+/* ============================ INIT ============================ */
+renderHome();
+</script>
+</body>
+</html>
