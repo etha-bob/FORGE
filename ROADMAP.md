@@ -19,6 +19,10 @@
   for every current movement. Assets are local so guides work offline.
 - Installable PWA support: app manifest, home-screen icons, safe-area layout,
   offline service worker, and local caching of all exercise guides.
+- A redesigned mobile interface with a compact rotation grid, persistent bottom
+  navigation, clearer set focus, completion feedback, and a calmer rest screen.
+- Optional iPhone Lock Screen timing through the system Now Playing surface,
+  backed by a wall-clock timer that survives page suspension and reloads.
 - Active workout duration now counts foreground training time instead of hours
   spent with an unfinished session in the background.
 

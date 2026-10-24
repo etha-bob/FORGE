@@ -2,6 +2,7 @@
   "name": "FORGE Workout Log",
   "short_name": "FORGE",
   "description": "Offline dumbbell, bench, and pull-up training log.",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

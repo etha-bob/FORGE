@@ -1,7 +1,7 @@
-const CACHE = 'forge-v2-2026-10-24';
+const CACHE = 'forge-v3-2026-10-24';
 const CORE = [
   './', './index.html', './forge-core.js', './manifest.webmanifest',
-  './assets/icon-192.png', './assets/icon-512.png',
+  './assets/icon-192.png', './assets/icon-512.png', './assets/rest-silence.m4a',
   './assets/exercises/arnold-press-finish.jpg', './assets/exercises/arnold-press-start.jpg',
   './assets/exercises/bicep-curl-finish.jpg', './assets/exercises/bicep-curl-start.jpg',
   './assets/exercises/bulgarian-split-squat-finish.jpg', './assets/exercises/bulgarian-split-squat-start.jpg',
@@ -47,5 +47,15 @@ self.addEventListener('fetch', event => {
       }
       return response;
     }).catch(() => caches.match('./index.html')))
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows => {
+      const existing = windows[0];
+      return existing ? existing.focus() : clients.openWindow('./');
+    })
   );
 });

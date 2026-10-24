@@ -10,6 +10,7 @@ It is designed for GitHub Pages and an iPhone home-screen install.
 - Auto-fill from the same exercise on the same A/B day
 - Show a day-specific progression target
 - Auto-starts a rest timer after every set (with beeps + phone vibration)
+- Offers an optional iPhone Lock Screen rest timer through the Now Playing card
 - Safely merge v1/v2 backups without overwriting existing history
 - Work fully offline, including locally stored exercise start/finish guides
 
@@ -27,6 +28,9 @@ It is designed for GitHub Pages and an iPhone home-screen install.
 1. Open the live URL in **Safari** on your iPhone 16 Pro Max.
 2. Tap the **Share** button → **Add to Home Screen**.
 3. Launch it from the icon — it opens full-screen with no browser bars.
+4. In FORGE, open **Program** and enable **Lock Screen timer** if you want rest
+   countdowns in iPhone's Now Playing area. This can temporarily take over media
+   controls and pause music while a rest timer is active.
 
 ## Notes
 - All logs live in your phone's browser storage (localStorage). They persist
@@ -36,6 +40,10 @@ It is designed for GitHub Pages and an iPhone home-screen install.
   device changes, use **Data → Export** on the old install and **Data → Import**
   on the new one. Import merges safely and creates a restorable snapshot first.
 - The rest timer keeps your screen awake during a workout (where supported).
+- A GitHub Pages PWA cannot create native Live Activities or guarantee a future
+  local notification after iOS fully suspends it. Lock Screen mode uses silent
+  media playback to keep a system-visible countdown active and attempts a normal
+  completion notification when the OS permits it.
 - See [ROADMAP.md](ROADMAP.md) for the routine rationale, media research, and
   planned enhancements.
 

@@ -19,11 +19,22 @@ const path = require('node:path');
   }
 
   await page.screenshot({ path: path.join(__dirname, 'home-smoke.png'), fullPage: true });
+  await page.locator('#toProgram').click();
+  await page.locator('#lockCapability').waitFor({ state: 'visible' });
+  await page.locator('[data-close="program"]').last().click();
   await page.locator('#nextBtn').click();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: path.join(__dirname, 'workout-smoke.png') });
   await page.locator('#howBtn').click();
   await page.locator('.pose img').first().waitFor({ state: 'visible' });
   await page.screenshot({ path: path.join(__dirname, 'guide-smoke.png') });
   await page.locator('[data-close="guide"]').last().click();
+  await page.evaluate(() => { const settings=LS.get(K_SETTINGS,{}); settings.lockTimer=true; LS.set(K_SETTINGS,settings); });
+  await page.locator('[data-chk="0"]').click();
+  await page.waitForTimeout(400);
+  if (!(await page.locator('#tLockState').textContent()).includes('active')) throw new Error('lock-screen timer did not activate');
+  await page.screenshot({ path: path.join(__dirname, 'timer-smoke.png') });
+  await page.locator('#tSkip').click();
 
   if (process.env.FORGE_BACKUP) {
     for (let i = 0; i < 4; i += 1) await page.locator('#navNext').click();
