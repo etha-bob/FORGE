@@ -1,20 +1,22 @@
-# FORGE — Mobile Workout App
+# FORGE — iPhone Workout PWA
 
-A self-contained workout logger for the dumbbell + bench lean-muscle program.
-Single file, no build step, no dependencies, works offline once loaded.
+A no-build workout logger for an adjustable bench, dumbbells, and pull-up bar.
+It is designed for GitHub Pages and an iPhone home-screen install.
 
 ## What it does
-- Pick a training day (Upper A / Lower A / Upper B / Lower B)
+- Follow a rolling Upper A / Lower A / Upper B / Lower B rotation
 - Walk through each exercise one at a time
-- Log weight + reps per set with tap steppers (no fiddly keyboard)
-- Auto-fills each set with what you lifted last time
+- Log weight + reps per set with 5 lb tap steppers
+- Auto-fill from the same exercise on the same A/B day
+- Show a day-specific progression target
 - Auto-starts a rest timer after every set (with beeps + phone vibration)
-- Saves a full training history (stored on your phone)
-- Tracks streak, weekly count, and total volume
+- Safely merge v1/v2 backups without overwriting existing history
+- Work fully offline, including locally stored exercise start/finish guides
 
 ## Deploy free on GitHub Pages (2 minutes)
 1. Create a new public repo on GitHub (e.g. `forge`).
-2. Upload `index.html` to the root of the repo.
+2. Upload the repository contents (`index.html`, `forge-core.js`, `sw.js`,
+   `manifest.webmanifest`, and `assets/`) to the root of the repo.
 3. Go to **Settings → Pages**.
 4. Under "Build and deployment", set **Source = Deploy from a branch**,
    **Branch = main**, **Folder = / (root)**. Save.
@@ -27,10 +29,18 @@ Single file, no build step, no dependencies, works offline once loaded.
 3. Launch it from the icon — it opens full-screen with no browser bars.
 
 ## Notes
-- All your logs live in your phone's browser storage (localStorage). They persist
+- All logs live in your phone's browser storage (localStorage). They persist
   between sessions but are tied to that browser. Don't "clear website data" for the
   site unless you want to wipe your history.
+- Deploy updates at the same GitHub Pages URL to retain local data. If the URL or
+  device changes, use **Data → Export** on the old install and **Data → Import**
+  on the new one. Import merges safely and creates a restorable snapshot first.
 - The rest timer keeps your screen awake during a workout (where supported).
-- Want to tweak the program? Edit the `PLAN` array near the top of the `<script>`
-  in `index.html` — each exercise has name, sets, rep range, rest seconds, and a
-  starting weight/reps.
+- See [ROADMAP.md](ROADMAP.md) for the routine rationale, media research, and
+  planned enhancements.
+
+## Check the core logic
+
+```powershell
+node tests/forge-core.test.js
+```
