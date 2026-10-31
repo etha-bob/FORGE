@@ -32,6 +32,30 @@
     'single-leg-rdl': { primary: ['Hamstrings', 'Glutes'], secondary: ['Back'] },
     'plank': { primary: ['Core'], secondary: [] }
   };
+  const EXERCISE_PATTERNS = {
+    'pull-up': 'vertical-pull',
+    'flat-db-bench': 'horizontal-push',
+    'incline-db-press': 'horizontal-push',
+    'one-arm-row': 'horizontal-pull',
+    'chest-supported-row': 'horizontal-pull',
+    'shoulder-press': 'vertical-push',
+    'arnold-press': 'vertical-push',
+    'lateral-raise': 'shoulder-isolation',
+    'bicep-curl': 'elbow-flexion',
+    'hammer-curl': 'elbow-flexion',
+    'overhead-triceps': 'elbow-extension',
+    'skull-crusher': 'elbow-extension',
+    'goblet-squat': 'knee-dominant',
+    'bulgarian-split-squat': 'knee-dominant',
+    'reverse-lunge': 'knee-dominant',
+    'romanian-deadlift': 'hinge',
+    'single-leg-rdl': 'hinge',
+    'calf-raise': 'calves',
+    'hanging-leg-raise': 'core-flexion',
+    'plank': 'core-stability',
+    'hip-thrust': 'hip-extension',
+    'pullover': 'shoulder-extension'
+  };
 
   function validHistory(value) {
     return Array.isArray(value) && value.every(record =>
@@ -164,6 +188,34 @@
       weight: numberOrNull(set.weight),
       reps: numberOrNull(set.reps)
     };
+  }
+
+  function applyMovementSubstitutions(basePlan, overrides = {}) {
+    const catalog = new Map();
+    (basePlan || []).forEach(day => (day.exercises || []).forEach(exercise => {
+      if (!catalog.has(exercise.id)) catalog.set(exercise.id, exercise);
+    }));
+    return (basePlan || []).map(day => {
+      const used = new Set();
+      const exercises = (day.exercises || []).map((slot, index) => {
+        const replacement = catalog.get(overrides[`${day.key}:${index}`]);
+        const compatible = replacement && EXERCISE_PATTERNS[replacement.id] &&
+          EXERCISE_PATTERNS[replacement.id] === EXERCISE_PATTERNS[slot.id] && !used.has(replacement.id);
+        const movement = compatible ? replacement : slot;
+        used.add(movement.id);
+        return {
+          ...slot,
+          id: movement.id,
+          n: movement.n,
+          sw: movement.sw,
+          sr: movement.sr,
+          bodyweight: Boolean(movement.bodyweight),
+          metric: movement.metric || 'reps',
+          note: movement.note || ''
+        };
+      });
+      return { ...day, exercises };
+    });
   }
 
   function programLookup(program) {
@@ -465,8 +517,12 @@
     report.workoutSessions.forEach(session => {
       lines.push(`### ${session.date} — ${session.routineName}`, '',
         `${session.summary.workingSets} working sets · ${session.summary.externalLoadVolumeLb} lb external-load volume`);
+      if (session.sessionNotes) lines.push('', `Session note: ${session.sessionNotes}`);
       session.exercises.forEach(exercise => {
-        const sets = exercise.performedSets.map(set => set.weight > 0 ? `${set.weight} lb × ${set.reps}` : `BW × ${set.reps}`).join(', ');
+        const sets = exercise.performedSets.map(set => {
+          const performance = set.weight > 0 ? `${set.weight} lb × ${set.reps}` : `BW × ${set.reps}`;
+          return set.rir === null ? performance : `${performance} (RIR ${set.rir})`;
+        }).join(', ');
         lines.push(`- ${exercise.name}: ${sets}`);
       });
       lines.push('');
@@ -478,9 +534,9 @@
   }
 
   return {
-    DEFAULT_ORDER, COACH_SCHEMA_VERSION, EXERCISE_MUSCLES,
+    DEFAULT_ORDER, COACH_SCHEMA_VERSION, EXERCISE_MUSCLES, EXERCISE_PATTERNS,
     validHistory, mergeHistory, findPreviousExercise, nextDayKey, weekCount,
-    workoutDurationMs, nextSetTarget,
+    workoutDurationMs, nextSetTarget, applyMovementSubstitutions,
     buildCoachReport, coachReportMarkdown
   };
 });

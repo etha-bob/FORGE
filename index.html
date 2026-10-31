@@ -154,7 +154,12 @@
     border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:11px 14px;margin:12px 0 0;line-height:1.4}
 
   .setgrid{margin-top:20px}
+  .setgrid-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;padding:0 4px}
+  .setgrid-head span{font-size:10px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:var(--mut2)}
+  .rir-toggle{border:1px solid var(--line2);background:var(--card2);color:var(--mut);border-radius:999px;padding:7px 10px;font:800 10px/1 var(--body);letter-spacing:.04em;cursor:pointer}
+  .rir-toggle.on{border-color:rgba(35,211,160,.42);background:rgba(35,211,160,.1);color:var(--rest)}
   .setcols{display:grid;grid-template-columns:42px 1fr 1fr 48px;gap:8px;padding:0 4px 8px;align-items:center}
+  .setcols.with-rir,.setrow.with-rir{grid-template-columns:36px minmax(0,1fr) minmax(0,1fr) 54px 46px;gap:6px}
   .setcols span{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--mut2);text-transform:uppercase;text-align:center}
   .setcols span:first-child{text-align:left}
   .setrow{
@@ -179,6 +184,7 @@
   }
   .stp input::-webkit-outer-spin-button,.stp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .bwcell{height:38px;display:grid;place-items:center;color:var(--rest);font-family:var(--display);font-size:22px;letter-spacing:.05em}
+  .ririnput{width:100%;height:40px;border:1px solid var(--line2);border-radius:11px;background:var(--card2);color:var(--txt);font:800 15px/1 var(--body);text-align:center;text-align-last:center;outline:none}
   .chk{
     width:46px;height:46px;border-radius:13px;border:2px solid var(--line2);background:var(--card2);
     display:grid;place-items:center;cursor:pointer;font-size:22px;color:var(--mut2);transition:.18s;
@@ -194,6 +200,13 @@
   }
   .exnav .btn{padding:16px}
   .exnav .prevb{flex:0 0 64px;width:64px}
+  .session-note-panel{margin:2px 20px 4px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);overflow:hidden}
+  .session-note-panel summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:10px 13px;cursor:pointer;color:var(--mut);font-size:11px;font-weight:800}
+  .session-note-panel summary::-webkit-details-marker{display:none}
+  .session-note-panel summary span:last-child{color:var(--mut2);font-size:9px;letter-spacing:.05em;text-transform:uppercase}
+  .session-note-panel[open] summary{color:var(--txt)}
+  .session-note-panel textarea{display:block;width:calc(100% - 20px);min-height:76px;margin:0 10px 10px;resize:vertical;border:1px solid var(--line2);border-radius:11px;background:var(--card2);color:var(--txt);padding:10px;font:600 13px/1.45 var(--body);outline:none}
+  .session-note-panel textarea:focus{border-color:rgba(35,211,160,.5)}
 
   /* ---------- TIMER ---------- */
   #timer{
@@ -342,6 +355,7 @@
   .lasttime .chips{display:flex;gap:7px;flex-wrap:wrap}
   .lchip{font-size:14px;font-weight:800;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:6px 11px;font-variant-numeric:tabular-nums}
   .lchip span{color:var(--mut2);font-weight:700;font-size:11px;margin-right:3px}
+  .lchip em{color:var(--rest);font-style:normal;font-size:9px;margin-left:4px}
   .goalstrip{margin-top:8px;color:var(--rest);font-size:11.5px;font-weight:800}
 
   /* ---------- history tabs + calendar ---------- */
@@ -469,6 +483,16 @@
   .switch.on{background:rgba(67,223,174,.3)}
   .switch.on span{transform:translateX(21px);background:var(--rest)}
   .capability{margin-top:8px;font-size:9px!important;color:var(--mut2)!important}
+  .routine-editor-panel{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+  .routine-editor-panel summary{list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer;color:var(--rest);font-size:12px;font-weight:850;padding:5px 1px}
+  .routine-editor-panel summary::-webkit-details-marker{display:none}
+  .routine-editor-panel summary span:last-child{color:var(--mut2);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+  .routine-day{margin-top:14px}
+  .routine-day h4{font:800 12px/1 var(--body);color:var(--txt);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
+  .routine-slot{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,1.15fr);gap:9px;align-items:center;padding:7px 0;border-top:1px solid rgba(255,255,255,.05)}
+  .routine-slot label{color:var(--mut);font-size:10.5px;font-weight:700;line-height:1.3}
+  .routine-slot select{width:100%;min-width:0;border:1px solid var(--line2);border-radius:10px;background:var(--card2);color:var(--txt);padding:9px 8px;font:700 11px/1.2 var(--body);outline:none}
+  .routine-reset{width:100%;margin-top:14px;border:1px solid var(--line2);border-radius:11px;background:transparent;color:var(--mut);padding:11px;font:800 11px/1 var(--body);cursor:pointer}
   .toast{bottom:calc(var(--safe-b) + 90px);border-radius:15px;background:rgba(25,29,36,.94);backdrop-filter:blur(18px)}
   @media(max-width:370px){.days{grid-template-columns:1fr}.day{min-height:138px}.nextcard{min-height:135px}.weekring{width:56px;height:56px}}
 </style>
@@ -521,6 +545,10 @@
       <div class="bar"><div class="fill" id="wkFill" style="width:0%"></div></div>
       <div class="lab"><span id="wkExLab"></span><span id="wkSetLab"></span></div>
     </div>
+    <details class="session-note-panel" id="sessionNotePanel">
+      <summary><span>Session note</span><span id="sessionNoteState">Optional</span></summary>
+      <textarea id="sessionNotes" maxlength="1000" placeholder="Energy, soreness, shoulder symptoms, technique notes…"></textarea>
+    </details>
     <div class="exwrap" id="exwrap"></div>
     <div class="exnav">
       <button class="btn ghost prevb" id="navPrev">‹</button>
@@ -601,6 +629,14 @@
     <div class="rule"><b>Progression</b><p>Keep 1–2 clean reps in reserve. When every set reaches the top of its range, add 5 lb next time and build back up from the low end.</p></div>
     <div class="rule"><b>Pull-ups</b><p>Upper A starts with pull-ups so you practice them fresh. On Upper B they follow incline press because that day prioritizes pressing. Use clean singles, controlled negatives, or safe foot assistance from the bench as needed.</p></div>
     <div class="rule"><b>Weekly target</b><p>Three sessions is the floor; four is the target. Consistent hard sets beat forcing a calendar reset or adding more exercises.</p></div>
+    <div class="rule">
+      <b>Routine editor</b><p>Swap compatible dumbbell, bench, or pull-up-bar movements. Changes apply to new workouts only; completed history keeps its original stable exercise IDs.</p>
+      <details class="routine-editor-panel" id="routineEditorPanel">
+        <summary><span>Customize movements</span><span id="routineEditorState">Default</span></summary>
+        <div id="routineEditor"></div>
+        <button class="routine-reset" id="routineReset">Restore default movements</button>
+      </details>
+    </div>
     <div class="rule"><b>Effort & safety</b><p class="safety">Stop for sharp pain, dizziness, or loss of control. Exercise illustrations show positions, not a prescribed tempo or individualized medical advice.</p></div>
   </div>
 </div>
@@ -658,7 +694,7 @@
 
 <script src="forge-core.js"></script>
 <script>
-const PLAN = [
+const BASE_PLAN = [
   { key:'upperA', name:'Upper A', kicker:'Pull · Press', accent:'#ff2e3f', exercises:[
     { id:'pull-up', n:'Pull-Up Progression', sets:3, rep:'3–8', rest:180, sw:0, sr:3, bodyweight:true, note:'Clean reps first. Then use controlled negatives or safe foot assistance if needed.' },
     { id:'flat-db-bench', n:'Flat DB Bench Press', sets:3, rep:'6–10', rest:150, sw:40, sr:8 },
@@ -695,6 +731,7 @@ const PLAN = [
     { id:'plank', n:'Side Plank', sets:3, rep:'30–60s', rest:60, sw:0, sr:30, metric:'sec', bodyweight:true, note:'Log seconds for the weaker side.' },
   ]},
 ];
+let PLAN=BASE_PLAN;
 
 /* ============================ EXERCISE GUIDES ============================ */
 const DB=(x,y)=>`<g class="db"><circle cx="${x-9}" cy="${y}" r="6.5"/><circle cx="${x+9}" cy="${y}" r="6.5"/><rect x="${x-9}" y="${y-2.6}" width="18" height="5.2" rx="1"/></g>`;
@@ -950,6 +987,12 @@ const K_SETTINGS='forge_settings_v2';
 const K_SAFETY='forge_safety_snapshot_v2';
 const K_TIMER='forge_timer_v3';
 
+function refreshPlan(){
+  const settings=LS.get(K_SETTINGS,{});
+  PLAN=ForgeCore.applyMovementSubstitutions(BASE_PLAN,settings.programOverrides||{});
+}
+refreshPlan();
+
 /* ============================ STATE ============================ */
 let session = null;   // active workout
 let wakeLock = null;
@@ -1064,14 +1107,15 @@ function relDate(ts){
 /* ============================ SESSION ============================ */
 function startSession(dayKey){
   const day=PLAN.find(d=>d.key===dayKey);
+  const settings=LS.get(K_SETTINGS,{});
   session={
-    dayKey, dayName:day.name, ts:Date.now(), current:0, elapsedMs:0, resumedAt:Date.now(),
+    dayKey, dayName:day.name, ts:Date.now(), current:0, elapsedMs:0, resumedAt:Date.now(), notes:'', trackRir:!!settings.trackRir,
     exercises: day.exercises.map(ex=>{
       const prev=prevForExercise(dayKey,ex.id,ex.n);
       const sets=[];
       for(let i=0;i<ex.sets;i++){
         const p=prev && prev[i] ? prev[i] : (prev && prev[prev.length-1] ? prev[prev.length-1] : null);
-        sets.push({ weight: p?p.weight:ex.sw, reps: p?p.reps:ex.sr, done:false });
+        sets.push({ weight: p?p.weight:ex.sw, reps: p?p.reps:ex.sr, rir:null, done:false });
       }
       return { id:ex.id, name:ex.n, rep:ex.rep, rest:ex.rest, metric:ex.metric||'reps', bodyweight:!!ex.bodyweight, note:ex.note||'', sets };
     })
@@ -1092,8 +1136,17 @@ function openWorkout(){
   go('workout');
   resumeSessionClock();
   requestWake();
+  $('sessionNotes').value=session.notes||'';
+  $('sessionNoteState').textContent=session.notes?'Saved':'Optional';
+  $('sessionNotePanel').open=!!session.notes;
   renderExercise();
 }
+$('sessionNotes').oninput=()=>{
+  session.notes=$('sessionNotes').value.slice(0,1000);
+  $('sessionNoteState').textContent=session.notes.trim()?'Saved':'Optional';
+  clearTimeout($('sessionNotes')._saveTimer);
+  $('sessionNotes')._saveTimer=setTimeout(saveActive,250);
+};
 function renderExercise(){
   const ex=session.exercises[session.current];
   $('wkTitle').textContent=session.dayName;
@@ -1113,7 +1166,7 @@ function renderExercise(){
   const lastHTML = prev ? `
     <div class="lasttime">
       <div class="lh">Last ${esc(session.dayName)}<span class="d">${new Date(prev.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span></div>
-      <div class="chips">${prev.sets.map((s,i)=>`<div class="lchip"><span>${i+1}</span>${fmtSet(s,ex.metric)}</div>`).join('')}</div>
+      <div class="chips">${prev.sets.map((s,i)=>`<div class="lchip"><span>${i+1}</span>${fmtSet(s,ex.metric)}${s.rir!=null?` <em>RIR ${s.rir}</em>`:''}</div>`).join('')}</div>
       <div class="goalstrip">${progressionGoal(ex,prev)}</div>
     </div>` : '';
   const wrap=$('exwrap');
@@ -1131,7 +1184,8 @@ function renderExercise(){
     <button class="howto" id="howBtn"><span class="pl">▶</span> How to perform this exercise</button>
     ${lastHTML}
     <div class="setgrid">
-      <div class="setcols"><span>SET</span><span>WEIGHT (LB)</span><span>${metricLabel}</span><span></span></div>
+      <div class="setgrid-head"><span>Working sets</span><button class="rir-toggle${session.trackRir?' on':''}" id="rirToggle">${session.trackRir?'RIR ON':'+ TRACK RIR'}</button></div>
+      <div class="setcols${session.trackRir?' with-rir':''}"><span>SET</span><span>WEIGHT (LB)</span><span>${metricLabel}</span>${session.trackRir?'<span>RIR</span>':''}<span></span></div>
       <div id="setRows"></div>
     </div>`;
 
@@ -1140,7 +1194,7 @@ function renderExercise(){
   ex.sets.forEach((st,i)=>{
     const r=document.createElement('div');
     const rowKey=`${session.current}:${i}`;
-    r.className='setrow'+(st.done?' done':'')+(i===currentSetIndex?' current':'')+(justDoneKey===rowKey?' justdone':'');
+    r.className='setrow'+(session.trackRir?' with-rir':'')+(st.done?' done':'')+(i===currentSetIndex?' current':'')+(justDoneKey===rowKey?' justdone':'');
     r.innerHTML=`
       <div class="snum">${i+1}</div>
       ${ex.bodyweight?'<div class="bwcell">BW</div>':`<div class="stp">
@@ -1153,6 +1207,9 @@ function renderExercise(){
         <input type="number" inputmode="numeric" id="r${i}" value="${st.reps}">
         <button data-a="r" data-i="${i}" data-d="1">+</button>
       </div>
+      ${session.trackRir?`<select class="ririnput" data-rir="${i}" aria-label="Reps in reserve for set ${i+1}">
+        <option value=""${st.rir==null?' selected':''}>—</option>${[0,1,2,3,4,5].map(v=>`<option value="${v}"${st.rir===v?' selected':''}>${v}</option>`).join('')}
+      </select>`:''}
       <div class="chk" data-chk="${i}" role="button" aria-label="${st.done?'Undo':'Complete'} set ${i+1}">${st.done?'✓':''}</div>`;
     rows.appendChild(r);
   });
@@ -1176,9 +1233,21 @@ function renderExercise(){
       inp.value=v; commitVal(i,a,v);
     };
   });
+  rows.querySelectorAll('[data-rir]').forEach(inp=>{
+    inp.onchange=()=>{
+      const st=session.exercises[session.current].sets[+inp.dataset.rir];
+      st.rir=inp.value===''?null:Number(inp.value);
+      saveActive();
+    };
+  });
   rows.querySelectorAll('[data-chk]').forEach(c=>{
     c.onclick=()=>toggleSet(+c.dataset.chk);
   });
+  $('rirToggle').onclick=()=>{
+    session.trackRir=!session.trackRir;
+    const settings=LS.get(K_SETTINGS,{}); settings.trackRir=session.trackRir; LS.set(K_SETTINGS,settings);
+    saveActive(); renderExercise();
+  };
   $('howBtn').onclick=()=>openGuide(ex.name,ex.id);
 }
 function commitVal(i,a,v){
@@ -1195,6 +1264,7 @@ function toggleSet(i){
   const w=$('w'+i), r=$('r'+i);
   if(w) st.weight=parseFloat(w.value)||0;
   if(r) st.reps=parseFloat(r.value)||0;
+  const rir=rowsRirValue(i); if(rir!==undefined) st.rir=rir;
   saveActive();
   renderExercise();
   if(st.done){
@@ -1207,6 +1277,10 @@ function toggleSet(i){
     // launch rest timer (unless it was the very last set of last exercise)
     startTimer(ex.rest, session.current, i);
   }
+}
+function rowsRirValue(i){
+  const input=document.querySelector(`[data-rir="${i}"]`);
+  return input ? (input.value===''?null:Number(input.value)) : undefined;
 }
 
 /* ============================ NAV ============================ */
@@ -1365,6 +1439,7 @@ function beep(freq,dur){
 
 /* ============================ FINISH ============================ */
 function finishWorkout(){
+  clearTimeout($('sessionNotes')._saveTimer);
   pauseSessionClock();
   const finishedTs=Date.now();
   const durationMs=ForgeCore.workoutDurationMs(session,finishedTs);
@@ -1372,9 +1447,10 @@ function finishWorkout(){
   const record={
     dayKey:session.dayKey, dayName:session.dayName, ts:session.ts, finishedTs,
     durationMs, durationBasis:'wall_clock', foregroundDurationMs:Number(session.elapsedMs)||0,
+    notes:(session.notes||'').trim()||null,
     exercises:session.exercises.map(e=>({
       id:e.id, name:e.name, metric:e.metric, bodyweight:e.bodyweight,
-      sets:e.sets.filter(s=>s.done).map(s=>({weight:s.weight,reps:s.reps}))
+      sets:e.sets.filter(s=>s.done).map(s=>({weight:s.weight,reps:s.reps,rir:s.rir??null}))
     })).filter(e=>e.sets.length>0)
   };
   const totalSets=record.exercises.reduce((a,e)=>a+e.sets.length,0);
@@ -1398,10 +1474,11 @@ function renderSummary(rec,totalSets,volume){
   if(rec.exercises.length===0){
     html+=`<div class="empty">No sets were logged. Mark sets with ✓ to save them.</div>`;
   }
+  if(rec.notes) html+=`<div class="sumcard"><h4>Session note</h4><p style="color:var(--mut);font-size:13px;line-height:1.5;margin-top:8px">${esc(rec.notes)}</p></div>`;
   rec.exercises.forEach(e=>{
     html+=`<div class="sumcard"><h4>${esc(e.name)}</h4>`;
     e.sets.forEach((s,i)=>{
-      html+=`<div class="sumset"><span>Set ${i+1}</span><span class="v"><b>${fmtSet(s,e.metric||'reps')}</b></span></div>`;
+      html+=`<div class="sumset"><span>Set ${i+1}</span><span class="v"><b>${fmtSet(s,e.metric||'reps')}</b>${s.rir!=null?` · RIR ${s.rir}`:''}</span></div>`;
     });
     html+=`</div>`;
   });
@@ -1429,8 +1506,8 @@ function histCardHTML(rec, open){
       <span class="tchip">End <b>${end}</b></span>
       <span class="tchip dur">⏱ Total <b>${durTxt}</b></span>
     </div>
-    <div class="detail">${rec.exercises.map(e=>`
-      <div class="drow"><b>${esc(e.name)}</b><span>${e.sets.map(s=>fmtSet(s,e.metric||'reps')).join(', ')}</span></div>`).join('')}</div>
+    <div class="detail">${rec.notes?`<div class="drow"><b>Session note</b><span>${esc(rec.notes)}</span></div>`:''}${rec.exercises.map(e=>`
+      <div class="drow"><b>${esc(e.name)}</b><span>${e.sets.map(s=>fmtSet(s,e.metric||'reps')+(s.rir!=null?` · RIR ${s.rir}`:'')).join(', ')}</span></div>`).join('')}</div>
   </div>`;
 }
 function renderHistory(){
@@ -1564,7 +1641,50 @@ function updateLockSettingUI(){
   else if(enabled&&'Notification' in window) note+=Notification.permission==='granted'?' · alerts allowed':' · completion alert not allowed';
   $('lockCapability').textContent=note;
 }
-$('toProgram').onclick=()=>{ updateLockSettingUI(); openModal('programModal'); };
+function movementCatalog(){
+  const byId=new Map();
+  BASE_PLAN.forEach(day=>day.exercises.forEach(ex=>{ if(!byId.has(ex.id)) byId.set(ex.id,ex); }));
+  return [...byId.values()];
+}
+function renderRoutineEditor(){
+  const settings=LS.get(K_SETTINGS,{});
+  const overrides=settings.programOverrides||{};
+  const catalog=movementCatalog();
+  const changed=Object.keys(overrides).length;
+  $('routineEditorState').textContent=changed?`${changed} customized`:'Default';
+  let html='';
+  PLAN.forEach((day,dayIndex)=>{
+    const rows=day.exercises.map((exercise,index)=>{
+      const base=BASE_PLAN[dayIndex].exercises[index];
+      const pattern=ForgeCore.EXERCISE_PATTERNS[base.id];
+      const choices=catalog.filter(candidate=>ForgeCore.EXERCISE_PATTERNS[candidate.id]===pattern);
+      if(choices.length<2) return '';
+      const used=new Set(day.exercises.filter((_,other)=>other!==index).map(item=>item.id));
+      if(!choices.some(candidate=>candidate.id!==exercise.id&&!used.has(candidate.id))) return '';
+      const options=choices.map(candidate=>`<option value="${candidate.id}"${candidate.id===exercise.id?' selected':''}${used.has(candidate.id)?' disabled':''}>${esc(candidate.n)}</option>`).join('');
+      return `<div class="routine-slot"><label>${esc(base.n)} slot</label><select data-routine-day="${day.key}" data-routine-index="${index}" aria-label="Movement for ${esc(day.name)} slot ${index+1}">${options}</select></div>`;
+    }).join('');
+    if(rows) html+=`<div class="routine-day"><h4>${esc(day.name)}</h4>${rows}</div>`;
+  });
+  $('routineEditor').innerHTML=html;
+  $('routineEditor').querySelectorAll('select').forEach(select=>{
+    select.onchange=()=>{
+      const key=`${select.dataset.routineDay}:${select.dataset.routineIndex}`;
+      const dayIndex=BASE_PLAN.findIndex(day=>day.key===select.dataset.routineDay);
+      const base=BASE_PLAN[dayIndex].exercises[Number(select.dataset.routineIndex)];
+      const next=LS.get(K_SETTINGS,{}); next.programOverrides={...(next.programOverrides||{})};
+      if(select.value===base.id) delete next.programOverrides[key]; else next.programOverrides[key]=select.value;
+      LS.set(K_SETTINGS,next); refreshPlan(); renderRoutineEditor(); renderHome();
+      toast('Routine updated for future workouts ✓');
+    };
+  });
+}
+$('toProgram').onclick=()=>{ updateLockSettingUI(); renderRoutineEditor(); openModal('programModal'); };
+$('routineReset').onclick=()=>{
+  if(!confirm('Restore every movement to the default FORGE routine? Completed workouts will not change.')) return;
+  const settings=LS.get(K_SETTINGS,{}); delete settings.programOverrides; LS.set(K_SETTINGS,settings);
+  refreshPlan(); renderRoutineEditor(); renderHome(); toast('Default routine restored ✓');
+};
 $('lockToggle').onclick=async()=>{
   const settings=LS.get(K_SETTINGS,{}); settings.lockTimer=!settings.lockTimer; LS.set(K_SETTINGS,settings);
   if(settings.lockTimer){

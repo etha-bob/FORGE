@@ -33,13 +33,16 @@
   retained separately for diagnostics.
 - Rest timers show the upcoming exercise, set number, weight, and rep target,
   including the first set of the next exercise after an exercise is completed.
+- Optional per-set RIR tracking can be enabled without changing the default
+  logging flow, and the preference carries into future workouts.
+- Collapsible session notes persist through active workouts, history, backups,
+  and Coach Reports.
+- The routine editor offers only equipment-compatible substitutions in the same
+  movement pattern, applies them to future workouts, and keeps stable exercise
+  ids so completed history remains valid.
 
 ## Next: training quality
 
-- Add optional per-set reps-in-reserve and session notes without making the
-  default logging flow slower.
-- Add a routine editor with movement substitutions constrained to the available
-  equipment and stable ids so historical charts remain valid.
 - Add deload suggestions based on repeated performance regression, not a fixed
   calendar alert.
 - Add set-level editing and deletion for completed workouts with an audit-safe

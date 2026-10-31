@@ -13,6 +13,9 @@ It is designed for GitHub Pages and an iPhone home-screen install.
 - Shows the upcoming exercise, set, weight, and reps on the rest timer
 - Offers an optional iPhone Lock Screen rest timer through the Now Playing card
 - Records total workout time from start to finish, including locked-screen rests
+- Optionally logs per-set RIR and a collapsible session note
+- Customizes future routines through compatible, equipment-safe substitutions
+  without rewriting completed workout history
 - Shares a versioned weekly Coach Report from iPhone and exports a full-history
   coaching report with progression, volume, and explicit missing-data context
 - Safely merge v1/v2 backups without overwriting existing history

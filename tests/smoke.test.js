@@ -21,6 +21,17 @@ const path = require('node:path');
   await page.screenshot({ path: path.join(__dirname, 'home-smoke.png'), fullPage: true });
   await page.locator('#toProgram').click();
   await page.locator('#lockCapability').waitFor({ state: 'visible' });
+  await page.locator('#routineEditorPanel summary').click();
+  const upperBPress = page.locator('[data-routine-day="upperB"][data-routine-index="0"]');
+  await upperBPress.selectOption('flat-db-bench');
+  if (await page.evaluate(() => PLAN.find(day => day.key === 'upperB').exercises[0].id) !== 'flat-db-bench') {
+    throw new Error('routine substitution did not apply');
+  }
+  page.once('dialog', dialog => dialog.accept());
+  await page.locator('#routineReset').click();
+  if (await page.evaluate(() => PLAN.find(day => day.key === 'upperB').exercises[0].id) !== 'incline-db-press') {
+    throw new Error('routine reset did not restore defaults');
+  }
   await page.locator('[data-close="program"]').last().click();
   await page.locator('#nextBtn').click();
   await page.waitForTimeout(400);
@@ -30,6 +41,14 @@ const path = require('node:path');
   await page.screenshot({ path: path.join(__dirname, 'guide-smoke.png') });
   await page.locator('[data-close="guide"]').last().click();
   await page.evaluate(() => { const settings=LS.get(K_SETTINGS,{}); settings.lockTimer=true; LS.set(K_SETTINGS,settings); });
+  await page.locator('#rirToggle').click();
+  await page.locator('[data-rir="0"]').selectOption('2');
+  await page.locator('#sessionNotePanel summary').click();
+  await page.locator('#sessionNotes').fill('Smoke-test session note');
+  const optionalTracking = await page.evaluate(() => ({ rir: session.exercises[0].sets[0].rir, notes: session.notes, remembered: LS.get(K_SETTINGS,{}).trackRir }));
+  if (optionalTracking.rir !== 2 || optionalTracking.notes !== 'Smoke-test session note' || !optionalTracking.remembered) {
+    throw new Error('optional RIR or session notes did not persist');
+  }
   await page.locator('[data-chk="0"]').click();
   await page.waitForTimeout(400);
   if (!(await page.locator('#tLockState').textContent()).includes('active')) throw new Error('lock-screen timer did not activate');
