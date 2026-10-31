@@ -215,6 +215,8 @@
     font-variant-numeric:tabular-nums}
   .ring .time .nx{color:var(--mut);font-size:13px;font-weight:700;margin-top:10px;text-align:center;max-width:200px}
   .ring .time .nx b{color:var(--txt)}
+  .ring .time .nx .next-set{display:block;color:var(--mut2);font-size:10px;letter-spacing:.09em;text-transform:uppercase;margin-bottom:3px}
+  .ring .time .nx .next-load{display:block;color:var(--rest);font-size:18px;font-weight:900;margin-top:4px;font-variant-numeric:tabular-nums}
   .tbtns{display:flex;gap:12px;margin-top:26px;width:100%;max-width:360px}
   .tbtns .tb{
     flex:1;border:1px solid var(--line2);background:var(--card);color:var(--txt);
@@ -304,6 +306,8 @@
   .dbtn{width:100%;border:none;border-radius:13px;font-weight:800;font-size:15px;padding:15px;cursor:pointer;color:#fff;transition:.15s;letter-spacing:.01em}
   .dbtn:active{transform:scale(.98)}
   .dbtn.exp{background:linear-gradient(135deg,var(--rest),var(--rest2));color:#04150f}
+  .coach-actions{display:grid;gap:9px}
+  .coach-note{color:var(--mut2);font-size:11.5px;font-weight:650;line-height:1.45;margin-top:9px}
   .dbtn.imp{background:var(--card2);border:1px solid var(--line2);color:var(--txt)}
   .dbtn.danger{background:transparent;border:1.5px solid rgba(255,46,63,.55);color:var(--red)}
   .drow2.dz{border-color:rgba(255,46,63,.28)}
@@ -610,6 +614,16 @@
     <h3>Your Data</h3>
     <p style="color:var(--mut);font-size:13px;font-weight:600;margin-top:8px;line-height:1.45">
       Your workout history lives only in this browser. Back it up or move it to another device here.</p>
+
+    <div class="drow2">
+      <h4>🧠 Coach report</h4>
+      <p>Create a versioned report for your trainer. It keeps completed workouts separate from your current plan and clearly identifies data FORGE did not record.</p>
+      <div class="coach-actions">
+        <button class="dbtn exp" id="btnCoachWeekly">Share weekly coach report</button>
+        <button class="dbtn imp" id="btnCoachFull">Download full history report</button>
+      </div>
+      <div class="coach-note">Weekly reports include the last 7 days, recent exercise history, and up to 8 weeks of volume context. On iPhone, Share opens the native share sheet when supported.</div>
+    </div>
 
     <div class="drow2">
       <h4>📤 Export backup</h4>
@@ -1191,7 +1205,7 @@ function toggleSet(i){
       saveActive(); renderExercise();
     }
     // launch rest timer (unless it was the very last set of last exercise)
-    startTimer(ex.rest, i, ex);
+    startTimer(ex.rest, session.current, i);
   }
 }
 
@@ -1261,17 +1275,24 @@ async function notifyTimerDone(){
   }catch(e){}
 }
 
-function startTimer(sec, setIndex, ex){
-  // figure out "next up" text
+function upcomingSetText(target){
+  if(!target) return '';
+  if(target.metric==='sec') return `${target.reps??0} sec`;
+  const reps=`${target.reps??0} rep${target.reps===1?'':'s'}`;
+  return target.bodyweight || !(target.weight>0) ? `Bodyweight × ${reps}` : `${target.weight} lb × ${reps}`;
+}
+function startTimer(sec, exerciseIndex, setIndex){
+  const target=ForgeCore.nextSetTarget(session,exerciseIndex,setIndex);
   let nextTxt='';
-  const nextSet=ex.sets[setIndex+1];
-  if(nextSet){ nextTxt=`Next up: <b>Set ${setIndex+2}</b> of ${esc(ex.name)}`; }
-  else {
-    const ne=session.exercises[session.current+1];
-    nextTxt=ne?`Next up: <b>${esc(ne.name)}</b>`:`<b>Last set done</b> — finish strong`;
+  if(target){
+    const prescription=upcomingSetText(target);
+    nextTxt=`<span class="next-set">Next set</span><b>${esc(target.exerciseName)} · Set ${target.setIndex+1}</b><span class="next-load">${esc(prescription)}</span>`;
+    tState.nextLabel=`Next: ${target.exerciseName}, set ${target.setIndex+1} — ${prescription}`;
+  }else{
+    nextTxt='<b>Last set done</b> — finish strong';
+    tState.nextLabel='Last set done — finish strong';
   }
   $('tNext').innerHTML=nextTxt;
-  tState.nextLabel=$('tNext').textContent.trim();
   tState.total=sec; tState.remaining=sec; tState.running=true; tState.endAt=Date.now()+sec*1000;
   $('tDisp').textContent=fmtTime(Math.ceil(sec));
   $('tReadyAt').textContent=timerReadyLabel();
@@ -1345,9 +1366,12 @@ function beep(freq,dur){
 /* ============================ FINISH ============================ */
 function finishWorkout(){
   pauseSessionClock();
+  const finishedTs=Date.now();
+  const durationMs=ForgeCore.workoutDurationMs(session,finishedTs);
   // save to history (only sets that were marked done OR keep all? keep all logged)
   const record={
-    dayKey:session.dayKey, dayName:session.dayName, ts:session.ts, finishedTs:Date.now(), durationMs:session.elapsedMs,
+    dayKey:session.dayKey, dayName:session.dayName, ts:session.ts, finishedTs,
+    durationMs, durationBasis:'wall_clock', foregroundDurationMs:Number(session.elapsedMs)||0,
     exercises:session.exercises.map(e=>({
       id:e.id, name:e.name, metric:e.metric, bodyweight:e.bodyweight,
       sets:e.sets.filter(s=>s.done).map(s=>({weight:s.weight,reps:s.reps}))
@@ -1369,7 +1393,7 @@ function renderSummary(rec,totalSets,volume){
   let html=`<div class="trophy">
       <div class="em">🔥</div>
       <h1>${esc(rec.dayName)} Done</h1>
-      <p>${totalSets} sets · ${Math.round(volume).toLocaleString()} lb total volume · ~${dur} min</p>
+      <p>${totalSets} sets · ${Math.round(volume).toLocaleString()} lb total volume · ${dur} min</p>
     </div>`;
   if(rec.exercises.length===0){
     html+=`<div class="empty">No sets were logged. Mark sets with ✓ to save them.</div>`;
@@ -1395,7 +1419,8 @@ function histCardHTML(rec, open){
   const start=new Date(rec.ts).toLocaleTimeString(undefined,tOpt);
   const hasEnd=rec.finishedTs && rec.finishedTs>rec.ts;
   const end=hasEnd?new Date(rec.finishedTs).toLocaleTimeString(undefined,tOpt):'—';
-  const durTxt=rec.durationMs!=null?fmtDur(rec.durationMs):(hasEnd?fmtDur(rec.finishedTs-rec.ts):'n/a');
+  const totalDuration=hasEnd?ForgeCore.workoutDurationMs(rec,rec.finishedTs):null;
+  const durTxt=totalDuration!=null?fmtDur(totalDuration):'n/a';
   return `<div class="hcard${open?' open':''}">
     <div class="top"><h4>${esc(rec.dayName)}</h4><span class="date">${new Date(rec.ts).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span></div>
     <div class="sub">${rec.exercises.length} exercises · ${sets} sets · ${Math.round(vol).toLocaleString()} lb volume</div>
@@ -1568,6 +1593,60 @@ function toast(msg){
   const t=$('toast'); t.textContent=msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2600);
 }
+
+function coachReport(mode){
+  const report=ForgeCore.buildCoachReport(LS.get(K_HIST,[]),{
+    mode,
+    program:PLAN,
+    legacyIds:LEGACY_MEDIA,
+    weightUnit:'lb'
+  });
+  report.readableSummaryMarkdown=ForgeCore.coachReportMarkdown(report);
+  return report;
+}
+
+function downloadFile(file){
+  const url=URL.createObjectURL(file);
+  const a=document.createElement('a');
+  a.href=url; a.download=file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function coachFile(report){
+  const stamp=new Date().toISOString().slice(0,10);
+  const scope=report.reportType==='full_history'?'full-history':'weekly';
+  return new File([JSON.stringify(report,null,2)],`forge-coach-${scope}-${stamp}.json`,{type:'application/json'});
+}
+
+$('btnCoachWeekly').onclick=async()=>{
+  const report=coachReport('weekly');
+  const jsonFile=coachFile(report);
+  const markdownFile=new File([report.readableSummaryMarkdown],jsonFile.name.replace(/\.json$/,'.md'),{type:'text/markdown'});
+  try{
+    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[jsonFile,markdownFile]}))){
+      await navigator.share({
+        title:'FORGE weekly coach report',
+        text:`FORGE coach report for ${report.report.periodStart} to ${report.report.periodEnd}`,
+        files:[jsonFile,markdownFile]
+      });
+      toast('Coach report shared ✓');
+    }else{
+      downloadFile(jsonFile);
+      toast('Coach report downloaded ✓');
+    }
+  }catch(error){
+    if(error && error.name!=='AbortError'){
+      downloadFile(jsonFile);
+      toast('Sharing unavailable · report downloaded');
+    }
+  }
+};
+
+$('btnCoachFull').onclick=()=>{
+  downloadFile(coachFile(coachReport('full')));
+  toast('Full coach history downloaded ✓');
+};
 
 // EXPORT
 $('btnExport').onclick=()=>{

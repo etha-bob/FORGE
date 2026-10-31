@@ -10,7 +10,11 @@ It is designed for GitHub Pages and an iPhone home-screen install.
 - Auto-fill from the same exercise on the same A/B day
 - Show a day-specific progression target
 - Auto-starts a rest timer after every set (with beeps + phone vibration)
+- Shows the upcoming exercise, set, weight, and reps on the rest timer
 - Offers an optional iPhone Lock Screen rest timer through the Now Playing card
+- Records total workout time from start to finish, including locked-screen rests
+- Shares a versioned weekly Coach Report from iPhone and exports a full-history
+  coaching report with progression, volume, and explicit missing-data context
 - Safely merge v1/v2 backups without overwriting existing history
 - Work fully offline, including locally stored exercise start/finish guides
 
@@ -39,6 +43,10 @@ It is designed for GitHub Pages and an iPhone home-screen install.
 - Deploy updates at the same GitHub Pages URL to retain local data. If the URL or
   device changes, use **Data → Export** on the old install and **Data → Import**
   on the new one. Import merges safely and creates a restorable snapshot first.
+- Use **Data → Share weekly coach report** for routine ChatGPT check-ins. The
+  weekly JSON covers a rolling seven days and includes recent performance and
+  aggregate volume context. Use **Download full history report** for onboarding
+  or long-term analysis. Coach reports are separate from restorable backups.
 - The rest timer keeps your screen awake during a workout (where supported).
 - A GitHub Pages PWA cannot create native Live Activities or guarantee a future
   local notification after iOS fully suspends it. Lock Screen mode uses silent

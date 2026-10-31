@@ -1,4 +1,4 @@
-const CACHE = 'forge-v3-2026-10-24';
+const CACHE = 'forge-v5-2026-10-31';
 const CORE = [
   './', './index.html', './forge-core.js', './manifest.webmanifest',
   './assets/icon-192.png', './assets/icon-512.png', './assets/rest-silence.m4a',

@@ -2,6 +2,11 @@
 
 ## Shipped in this release
 
+- Versioned Coach Reports now export completed sessions, a clearly separated
+  current-program snapshot, recent exercise progression, weekly muscle-group
+  volume, and explicit missing-data warnings. Weekly reports use the iPhone
+  share sheet where supported; full-history reports remain one-tap downloads.
+
 - Context-aware history: an exercise now recalls only the matching A/B day,
   using `dayKey + exercise id`, so Upper A fatigue never sets expectations for
   Upper B.
@@ -23,8 +28,11 @@
   navigation, clearer set focus, completion feedback, and a calmer rest screen.
 - Optional iPhone Lock Screen timing through the system Now Playing surface,
   backed by a wall-clock timer that survives page suspension and reloads.
-- Active workout duration now counts foreground training time instead of hours
-  spent with an unfinished session in the background.
+- Workout totals now use the real start-to-finish span, including rest time while
+  the phone is locked or the PWA is suspended. Foreground-active duration is
+  retained separately for diagnostics.
+- Rest timers show the upcoming exercise, set number, weight, and rep target,
+  including the first set of the next exercise after an exercise is completed.
 
 ## Next: training quality
 
@@ -48,7 +56,7 @@
 
 ## Later: static-host-friendly portability
 
-- Use the Web Share API where iOS supports it to send encrypted backup files to
+- Extend the current Coach Report share flow to encrypted backup files for
   Files, AirDrop, or iCloud Drive.
 - Add periodic backup reminders. Any real multi-device sync would require an
   external account/backend and is intentionally outside the GitHub Pages-only

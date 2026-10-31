@@ -33,8 +33,34 @@ const path = require('node:path');
   await page.locator('[data-chk="0"]').click();
   await page.waitForTimeout(400);
   if (!(await page.locator('#tLockState').textContent()).includes('active')) throw new Error('lock-screen timer did not activate');
+  const nextSet = await page.evaluate(() => ({
+    text: document.getElementById('tNext').textContent,
+    exercise: session.exercises[0].name,
+    reps: session.exercises[0].sets[1].reps
+  }));
+  if (!nextSet.text.includes(nextSet.exercise) || !nextSet.text.includes('Set 2') || !nextSet.text.includes(String(nextSet.reps))) {
+    throw new Error('rest timer did not show the upcoming set prescription');
+  }
   await page.screenshot({ path: path.join(__dirname, 'timer-smoke.png') });
   await page.locator('#tSkip').click();
+
+  await page.evaluate(() => openData());
+  await page.locator('#btnCoachWeekly').waitFor({ state: 'visible' });
+  const coachShape = await page.evaluate(() => {
+    const report = coachReport('weekly');
+    return {
+      schemaVersion: report.schemaVersion,
+      reportType: report.reportType,
+      hasProgram: report.currentProgram.routines.length > 0,
+      hasQualityWarnings: report.dataQuality.warnings.length > 0,
+      hasMarkdown: report.readableSummaryMarkdown.startsWith('# FORGE Coach Report')
+    };
+  });
+  if (coachShape.schemaVersion !== '1.0' || coachShape.reportType !== 'weekly_coach_report' ||
+      !coachShape.hasProgram || !coachShape.hasQualityWarnings || !coachShape.hasMarkdown) {
+    throw new Error('coach report did not expose the expected schema');
+  }
+  await page.locator('[data-close="data"]').last().click();
 
   if (process.env.FORGE_BACKUP) {
     for (let i = 0; i < 4; i += 1) await page.locator('#navNext').click();
